@@ -1,4 +1,6 @@
 #include "PskxFactory.h"
+#include "ActorXImportWindow.h"
+#include "Misc/App.h"
 
 #include "PskPsaUtils.h"
 #include "PskReader.h"
@@ -7,16 +9,27 @@
 #include "EditorFramework/AssetImportData.h"
 #include "Materials/MaterialInstanceConstant.h"
 
-UObject* UPskxFactory::Import(const FString& Filename, UObject* Parent, const FName Name, const EObjectFlags Flags, TMap<FString, FString> MaterialNameToPathMap)
+UObject* UPskxFactory::FactoryCreateFile(UClass* InClass, UObject* InParent, FName InName, EObjectFlags Flags, const FString& Filename, const TCHAR* Params, FFeedbackContext* Warn, bool& bOutOperationCanceled)
+{
+    bOutOperationCanceled = false;
+    if (!IsAutomatedImport() && !IsRunningCommandlet() && !FApp::IsUnattended() &&
+        !ShowActorXImportOptions(Orientation, Filename))
+    { bOutOperationCanceled = true; return nullptr; }
+    return Import(Filename, InParent, InName, Flags, {}, Orientation);
+}
+
+UObject* UPskxFactory::Import(const FString& Filename, UObject* Parent, const FName Name, const EObjectFlags Flags, TMap<FString, FString> MaterialNameToPathMap, const FActorXOrientation& Orientation)
 {
 	auto Data = FPskReader(Filename);
 	if (!Data.bIsValid) return nullptr;
+	const FQuat4f BasisRotation = Orientation.Rotation();
 	
 	auto RawMesh = FRawMesh();
 	for (auto Vertex : Data.Vertices)
 	{
 		auto FixedVertex = Vertex;
 		FixedVertex.Y = -FixedVertex.Y; // MIRROR_MESH
+		FixedVertex = BasisRotation.RotateVector(FixedVertex);
 		RawMesh.VertexPositions.Add(FixedVertex);
 	}
 
@@ -46,7 +59,7 @@ UObject* UPskxFactory::Import(const FString& Filename, UObject* Parent, const FN
 				RawMesh.WedgeTexCoords[UVIndex+1].Add(UV);
 			}
 			
-			RawMesh.WedgeTangentZ.Add(Data.bHasVertexNormals ? Data.Normals[Data.Normals.Num() == Data.Vertices.Num() ? PskWedge.PointIndex : WedgeIndex] * FVector3f(1, -1, 1) : FVector3f::ZeroVector);
+			RawMesh.WedgeTangentZ.Add(Data.bHasVertexNormals ? BasisRotation.RotateVector(Data.Normals[Data.Normals.Num() == Data.Vertices.Num() ? PskWedge.PointIndex : WedgeIndex] * FVector3f(1, -1, 1)) : FVector3f::ZeroVector);
 			RawMesh.WedgeTangentY.Add(FVector3f::ZeroVector);
 			RawMesh.WedgeTangentX.Add(FVector3f::ZeroVector);
 		}
@@ -84,7 +97,10 @@ UObject* UPskxFactory::Import(const FString& Filename, UObject* Parent, const FN
 	SourceModel.BuildSettings.bUseMikkTSpace = true;
 	SourceModel.SaveRawMesh(RawMesh);
 
-	StaticMesh->GetAssetImportData()->Update(Filename);
+    auto* ImportData = NewObject<UActorXMeshImportData>(StaticMesh);
+    ImportData->Orientation = Orientation;
+    ImportData->Update(Filename);
+    StaticMesh->SetAssetImportData(ImportData);
 	StaticMesh->Build();
 	StaticMesh->PostEditChange();
 	FAssetCompilingManager::Get().FinishCompilationForObjects({StaticMesh});

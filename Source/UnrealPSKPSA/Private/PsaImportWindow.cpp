@@ -1,6 +1,7 @@
 #include "PsaImportWindow.h"
 #include "PsaImportSettings.h"
 #include "PsaImporter.h"
+#include "ActorXImportSettings.h"
 #include "Animation/AnimSequence.h"
 #include "Engine/SkeletalMesh.h"
 #include "DesktopPlatformModule.h"
@@ -49,6 +50,14 @@ namespace
                     + SVerticalBox::Slot().AutoHeight().Padding(0,0,0,10)
                     [SNew(STextBlock).Text(FText::FromString(TEXT("选择已导入 UE 的骨骼网格，再选择 PSA 动画。网格可来自 PSK 或 FBX。"))).AutoWrapText(true)]
                     + SVerticalBox::Slot().AutoHeight()[Details]
+                    + SVerticalBox::Slot().AutoHeight().Padding(0,8,0,0)
+                    [SNew(STextBlock).AutoWrapText(true).Text_Lambda([this]
+                    {
+                        if (!Settings->TargetMesh) return FText::FromString(TEXT("动画朝向：选择目标网格后自动读取，网格与动画保持一致。"));
+                        if (const auto* Data = Cast<UActorXMeshImportData>(Settings->TargetMesh->GetAssetImportData()))
+                            return FText::FromString(TEXT("动画朝向：沿用目标网格（") + Data->Orientation.Description() + TEXT("）。如需改变，请先用新朝向导入模型，再导入动画。"));
+                        return FText::FromString(TEXT("动画朝向：目标网格未记录 ActorX 朝向，保持原有坐标。旧模型如需改为 +Y，请重新导入 PSK 并选择目标朝向。"));
+                    })]
                     + SVerticalBox::Slot().AutoHeight().Padding(0,12,0,6)
                     [
                         SNew(SHorizontalBox)

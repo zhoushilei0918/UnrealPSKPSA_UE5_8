@@ -4,6 +4,7 @@
 #include "Factories/Factory.h"
 #include "Engine/SkeletalMesh.h"
 #include "Misc/Paths.h"
+#include "ActorXImportSettings.h"
 #include "PskFactory.generated.h"
 
 UCLASS()
@@ -22,7 +23,10 @@ public:
 	}
 	
 	static UObject* Import(const FString& Filename, UObject* Parent, const FName Name, const EObjectFlags Flags, TMap<FString, FString>
-	                       MaterialNameToPathMap);
+	                       MaterialNameToPathMap, const FActorXOrientation& Orientation = FActorXOrientation());
+
+    UPROPERTY(EditAnywhere, Category="Import")
+    FActorXOrientation Orientation;
 	static void ProcessSkeleton(const FSkeletalMeshImportData&    ImportData,
 								const USkeleton*                  Skeleton,
 								FReferenceSkeleton&               OutRefSkeleton,
@@ -39,10 +43,6 @@ protected:
 		return Extension.Equals(FactoryExtension, ESearchCase::IgnoreCase);
 	}
 	
-	virtual UObject* FactoryCreateFile(UClass* InClass, UObject* InParent, FName InName, EObjectFlags Flags, const FString& Filename, const TCHAR* Params, FFeedbackContext* Warn, bool& bOutOperationCanceled) override
-	{
-		bOutOperationCanceled = false;
-		return Import(Filename, InParent, InName, Flags, TMap<FString, FString>());
-	}
+	virtual UObject* FactoryCreateFile(UClass* InClass, UObject* InParent, FName InName, EObjectFlags Flags, const FString& Filename, const TCHAR* Params, FFeedbackContext* Warn, bool& bOutOperationCanceled) override;
 	
 };

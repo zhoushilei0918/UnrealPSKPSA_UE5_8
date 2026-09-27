@@ -46,7 +46,7 @@ bool FPsaDirectoryImportTest::RunTest(const FString& Parameters)
     FParse::Value(FCommandLine::Get(), TEXT("PskTestFile="), PskFile);
     if (!TestTrue(TEXT("PSK exists"), FPaths::FileExists(PskFile))) return false;
     UPackage* Package = CreatePackage(TEXT("/Game/PSAValidation/Mesh/girl023_LV2_body01_skm"));
-    USkeletalMesh* Mesh = Cast<USkeletalMesh>(UPskFactory::Import(PskFile, Package, TEXT("girl023_LV2_body01_skm"), RF_Public | RF_Standalone, {}));
+    USkeletalMesh* Mesh = Cast<USkeletalMesh>(UPskFactory::Import(PskFile, Package, TEXT("girl023_LV2_body01_skm"), RF_Public | RF_Standalone, {}, FActorXOrientation::Unchanged()));
     if (!TestNotNull(TEXT("Create target mesh"), Mesh)) return false;
     TestTrue(TEXT("Save target mesh"), SavePsaTestAsset(Mesh));
     TestTrue(TEXT("Save skeleton"), SavePsaTestAsset(Mesh->GetSkeleton()));

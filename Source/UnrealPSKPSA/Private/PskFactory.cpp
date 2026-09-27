@@ -1,4 +1,6 @@
 #include "PskFactory.h"
+#include "ActorXImportWindow.h"
+#include "Misc/App.h"
 
 #include "Animation/Skeleton.h"
 #include "AssetCompilingManager.h"
@@ -13,7 +15,16 @@
 #include "Rendering/SkeletalMeshLODModel.h"
 #include "Rendering/SkeletalMeshModel.h"
 
-UObject* UPskFactory::Import(const FString& Filename, UObject* Parent, const FName Name, const EObjectFlags Flags, TMap<FString, FString> MaterialNameToPathMap)
+UObject* UPskFactory::FactoryCreateFile(UClass* InClass, UObject* InParent, FName InName, EObjectFlags Flags, const FString& Filename, const TCHAR* Params, FFeedbackContext* Warn, bool& bOutOperationCanceled)
+{
+    bOutOperationCanceled = false;
+    if (!IsAutomatedImport() && !IsRunningCommandlet() && !FApp::IsUnattended() &&
+        !ShowActorXImportOptions(Orientation, Filename))
+    { bOutOperationCanceled = true; return nullptr; }
+    return Import(Filename, InParent, InName, Flags, {}, Orientation);
+}
+
+UObject* UPskFactory::Import(const FString& Filename, UObject* Parent, const FName Name, const EObjectFlags Flags, TMap<FString, FString> MaterialNameToPathMap, const FActorXOrientation& Orientation)
 {
 	auto Data = FPskReader(Filename);
 	if (!Data.bIsValid) return nullptr;
@@ -25,16 +36,19 @@ UObject* UPskFactory::Import(const FString& Filename, UObject* Parent, const FNa
     }
 
 	FSkeletalMeshImportData SkeletalMeshImportData;
+	const FQuat4f BasisRotation = Orientation.Rotation();
 
 	for (auto i = 0; i < Data.Normals.Num(); i++)
 	{
 		Data.Normals[i].Y = -Data.Normals[i].Y; // MIRROR_MESH
+		Data.Normals[i] = BasisRotation.RotateVector(Data.Normals[i]);
 	}
 
 	for (auto Vertex : Data.Vertices)
 	{
 		auto FixedVertex = Vertex;
 		FixedVertex.Y = -FixedVertex.Y; // MIRROR_MESH
+		FixedVertex = BasisRotation.RotateVector(FixedVertex);
 		SkeletalMeshImportData.Points.Add(FixedVertex);
 		SkeletalMeshImportData.PointToRawMap.Add(SkeletalMeshImportData.Points.Num()-1);
 	}
@@ -93,6 +107,11 @@ UObject* UPskFactory::Import(const FString& Filename, UObject* Parent, const FNa
 		FTransform3f PskTransform;
 		PskTransform.SetLocation(FVector3f(PskBonePos.Position.X, -PskBonePos.Position.Y, PskBonePos.Position.Z));
 		PskTransform.SetRotation(FQuat4f(PskBonePos.Orientation.X, -PskBonePos.Orientation.Y, PskBonePos.Orientation.Z, PskBonePos.Orientation.W).GetNormalized());
+        if (Bone.ParentIndex == INDEX_NONE)
+        {
+            PskTransform.SetTranslation(BasisRotation.RotateVector(PskTransform.GetTranslation()));
+            PskTransform.SetRotation((BasisRotation * PskTransform.GetRotation()).GetNormalized());
+        }
 
 		SkeletalMeshImportData::FJointPos BonePos;
 		BonePos.Transform = PskTransform;
@@ -199,7 +218,7 @@ UObject* UPskFactory::Import(const FString& Filename, UObject* Parent, const FNa
             if (!Modified.Contains(Delta.PointIdx))
             {
                 Modified.Add(Delta.PointIdx);
-                Morph.Points.Add(SkeletalMeshImportData.Points[Delta.PointIdx] + Delta.PositionDelta * FVector3f(1, -1, 1));
+                Morph.Points.Add(SkeletalMeshImportData.Points[Delta.PointIdx] + BasisRotation.RotateVector(Delta.PositionDelta * FVector3f(1, -1, 1)));
             }
         }
         MorphOffset += Info.VertexCount;
@@ -215,7 +234,10 @@ UObject* UPskFactory::Import(const FString& Filename, UObject* Parent, const FNa
     }
     SkeletalMesh->CreateMeshDescription(0, MoveTemp(MeshDescription));
     SkeletalMesh->CommitMeshDescription(0);
-    SkeletalMesh->GetAssetImportData()->Update(Filename);
+    auto* ImportData = NewObject<UActorXMeshImportData>(SkeletalMesh);
+    ImportData->Orientation = Orientation;
+    ImportData->Update(Filename);
+    SkeletalMesh->SetAssetImportData(ImportData);
     SkeletalMesh->SetSkeleton(Skeleton);
     Skeleton->MergeAllBonesToBoneTree(SkeletalMesh);
     SkeletalMesh->PostEditChange();

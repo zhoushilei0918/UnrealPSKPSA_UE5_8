@@ -1,5 +1,6 @@
 #include "PsaImporter.h"
 #include "PsaReader.h"
+#include "ActorXImportSettings.h"
 #include "Animation/AnimSequence.h"
 #include "Animation/AnimBoneCompressionSettings.h"
 #include "Animation/AnimData/IAnimationDataController.h"
@@ -67,6 +68,8 @@ bool FPsaImporter::ImportFile(const FString& Filename, USkeletalMesh* Mesh, cons
 
     const FReferenceSkeleton& Ref = Mesh->GetRefSkeleton();
     int32 CreatedCount = 0;
+    const FActorXOrientation Orientation = GetActorXMeshOrientation(Mesh);
+    const FQuat4f BasisRotation = Orientation.Rotation();
     for (const FPsaSequenceInfo& Info : Reader.Sequences)
     {
         FString AssetName = ObjectTools::SanitizeObjectName(Info.Name);
@@ -129,10 +132,18 @@ bool FPsaImporter::ImportFile(const FString& Filename, USkeletalMesh* Mesh, cons
             {
                 const int64 KeyIndex = (int64(Info.FirstRawFrame) + Frame) * Info.TotalBones + Bone.SourceIndex;
                 const FPsaKey& Key = Reader.Keys[KeyIndex];
-                Positions.Add(Key.Position * FVector3f(1, -1, 1) * Options.TranslationScale);
+                FVector3f Position = Key.Position * FVector3f(1, -1, 1) * Options.TranslationScale;
                 FQuat4f Rotation(Key.Rotation.X, -Key.Rotation.Y, Key.Rotation.Z, Key.Rotation.W);
                 // FModel flips W only on root; UEViewer/legacy ActorX flips it on every bone.
                 if (!Options.bFModel || Bone.SourceIndex == 0) Rotation.W *= -1;
+                // The mesh basis is baked into the root only; child local tracks inherit it.
+                // Rotating every local track would accumulate the yaw down the hierarchy.
+                if (Bone.SourceIndex == 0)
+                {
+                    Position = BasisRotation.RotateVector(Position);
+                    Rotation = BasisRotation * Rotation;
+                }
+                Positions.Add(Position);
                 Rotation.Normalize();
                 if (!Rotations.IsEmpty() && (Rotations.Last() | Rotation) < 0) Rotation = Rotation * -1.0f;
                 Rotations.Add(Rotation);
@@ -172,5 +183,6 @@ bool FPsaImporter::ImportFile(const FString& Filename, USkeletalMesh* Mesh, cons
     }
     Summary = FString::Printf(TEXT("%s：%d 个动画；匹配 %d/%d 根目标骨骼，忽略 %d 根额外源骨骼，%d 根缺失轨道保持参考姿态。"),
         *FPaths::GetCleanFilename(Filename), CreatedCount, Mapping.Num(), Ref.GetRawBoneNum(), Reader.Bones.Num() - Mapping.Num(), Ref.GetRawBoneNum() - Mapping.Num());
+    Summary += TEXT("朝向：") + Orientation.Description() + TEXT("。");
     return true;
 }

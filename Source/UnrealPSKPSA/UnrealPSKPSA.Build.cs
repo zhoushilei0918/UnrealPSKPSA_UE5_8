@@ -8,7 +8,7 @@ public class UnrealPSKPSA : ModuleRules
         PublicDependencyModuleNames.AddRange(new[] { "Core", "CoreUObject", "Engine", "UnrealEd" });
         PrivateDependencyModuleNames.AddRange(new[]
         {
-            "AssetRegistry", "MeshDescription", "RawMesh", "RenderCore",
+            "AssetRegistry", "MeshDescription", "SkeletalMeshDescription", "StaticMeshDescription", "RawMesh", "RenderCore",
             "MeshBuilder", "MeshUtilitiesCommon", "TargetPlatform",
             "AnimationDataController", "AssetTools", "Slate", "SlateCore",
             "ToolMenus", "ContentBrowser", "DesktopPlatform", "PropertyEditor", "Json"
