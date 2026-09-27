@@ -2,6 +2,8 @@
 
 #include "CoreMinimal.h"
 #include "Factories/Factory.h"
+#include "Engine/SkeletalMesh.h"
+#include "Misc/Paths.h"
 #include "PskFactory.generated.h"
 
 UCLASS()
@@ -34,12 +36,13 @@ protected:
 	virtual bool FactoryCanImport(const FString& Filename) override
 	{
 		const auto Extension = FPaths::GetExtension(Filename);
-		return Extension.Equals(FactoryExtension);
+		return Extension.Equals(FactoryExtension, ESearchCase::IgnoreCase);
 	}
 	
 	virtual UObject* FactoryCreateFile(UClass* InClass, UObject* InParent, FName InName, EObjectFlags Flags, const FString& Filename, const TCHAR* Params, FFeedbackContext* Warn, bool& bOutOperationCanceled) override
 	{
-		return Import(Filename, InParent, FName(*InName.ToString().Replace(TEXT("_LOD0"), TEXT(""))), Flags, TMap<FString, FString>());
+		bOutOperationCanceled = false;
+		return Import(Filename, InParent, InName, Flags, TMap<FString, FString>());
 	}
 	
 };

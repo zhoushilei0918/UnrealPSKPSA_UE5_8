@@ -1,6 +1,10 @@
 #include "PskFactory.h"
 
-#include "IMeshBuilderModule.h"
+#include "Animation/Skeleton.h"
+#include "AssetCompilingManager.h"
+#include "EditorFramework/AssetImportData.h"
+#include "MeshDescription.h"
+#include "UnrealPSKPSA.h"
 #include "PskPsaUtils.h"
 #include "PskReader.h"
 #include "AssetRegistry/AssetRegistryModule.h"
@@ -14,18 +18,12 @@ UObject* UPskFactory::Import(const FString& Filename, UObject* Parent, const FNa
 	auto Data = FPskReader(Filename);
 	if (!Data.bIsValid) return nullptr;
 
-	TArray<FColor> VertexColorsByPoint;
-	VertexColorsByPoint.Init(FColor::Black, Data.VertexColors.Num());
-	if (Data.bHasVertexColors)
-	{
-		for (auto i = 0; i < Data.Wedges.Num(); i++)
-		{
-			auto FixedColor = Data.VertexColors[i];
-			Swap(FixedColor.R, FixedColor.B);
-			VertexColorsByPoint[Data.Wedges[i].PointIndex] = FixedColor;
-		}
-	}
-	
+    if (Data.Bones.IsEmpty() || Data.Influences.IsEmpty())
+    {
+        UE_LOG(LogUnrealPSKPSA, Error, TEXT("PSK skeletal meshes require bones and weights. Use PSKX for static meshes."));
+        return nullptr;
+    }
+
 	FSkeletalMeshImportData SkeletalMeshImportData;
 
 	for (auto i = 0; i < Data.Normals.Num(); i++)
@@ -46,7 +44,7 @@ UObject* UPskFactory::Import(const FString& Filename, UObject* Parent, const FNa
 	{
 		SkeletalMeshImportData::FTriangle Face;
 		Face.MatIndex = PskFace.MatIndex;
-		Face.SmoothingGroups = 1;
+		Face.SmoothingGroups = PskFace.SmoothingGroups;
 		Face.AuxMatIndex = 0;
 
 		for (auto VertexIndex : WindingOrder)
@@ -55,9 +53,14 @@ UObject* UPskFactory::Import(const FString& Filename, UObject* Parent, const FNa
 			const auto PskWedge = Data.Wedges[WedgeIndex];
 			
 			SkeletalMeshImportData::FVertex Wedge;
-			Wedge.MatIndex = PskWedge.MatIndex;
+			Wedge.MatIndex = PskFace.MatIndex;
 			Wedge.VertexIndex = PskWedge.PointIndex;
-			Wedge.Color = Data.bHasVertexColors ? VertexColorsByPoint[PskWedge.PointIndex] : FColor::Black;
+			Wedge.Color = FColor::White;
+            if (Data.bHasVertexColors)
+            {
+                Wedge.Color = Data.VertexColors[Data.VertexColors.Num() == Data.Wedges.Num() ? WedgeIndex : PskWedge.PointIndex];
+                Swap(Wedge.Color.R, Wedge.Color.B); // ActorX stores RGBA; FColor uses BGRA on Windows.
+            }
 			Wedge.UVs[0] = FVector2f(PskWedge.U, PskWedge.V);
 			for (auto UVIdx = 0; UVIdx < Data.ExtraUVs.Num(); UVIdx++)
 			{
@@ -66,7 +69,7 @@ UObject* UPskFactory::Import(const FString& Filename, UObject* Parent, const FNa
 			}
 			
 			Face.WedgeIndex[VertexIndex] = SkeletalMeshImportData.Wedges.Add(Wedge);
-			Face.TangentZ[VertexIndex] = Data.bHasVertexNormals ? Data.Normals[PskWedge.PointIndex] : FVector3f::ZeroVector;
+			Face.TangentZ[VertexIndex] = Data.bHasVertexNormals ? Data.Normals[Data.Normals.Num() == Data.Vertices.Num() ? PskWedge.PointIndex : WedgeIndex] : FVector3f::ZeroVector;
 			Face.TangentY[VertexIndex] = FVector3f::ZeroVector;
 			Face.TangentX[VertexIndex] = FVector3f::ZeroVector;
 		}
@@ -135,12 +138,10 @@ UObject* UPskFactory::Import(const FString& Filename, UObject* Parent, const FNa
 	
 	SkeletalMeshImportData.MaxMaterialIndex = SkeletalMeshImportData.Materials.Num()-1;
 
-	SkeletalMeshImportData.bDiffPose = false;
 	SkeletalMeshImportData.bHasNormals = Data.bHasVertexNormals;
 	SkeletalMeshImportData.bHasTangents = false;
-	SkeletalMeshImportData.bHasVertexColors = true;
+	SkeletalMeshImportData.bHasVertexColors = Data.bHasVertexColors;
 	SkeletalMeshImportData.NumTexCoords = 1 + Data.ExtraUVs.Num(); 
-	SkeletalMeshImportData.bUseT0AsRefPose = false;
 	
 	const auto Skeleton = FPskPsaUtils::LocalCreate<USkeleton>(USkeleton::StaticClass(), Parent,  Name.ToString().Append("_Skeleton"), Flags);
 
@@ -148,16 +149,6 @@ UObject* UPskFactory::Import(const FString& Filename, UObject* Parent, const FNa
 	auto SkeletalDepth = 0;
 	ProcessSkeleton(SkeletalMeshImportData, Skeleton, RefSkeleton, SkeletalDepth);
 
-	TArray<FVector3f> LODPoints;
-	TArray<SkeletalMeshImportData::FMeshWedge> LODWedges;
-	TArray<SkeletalMeshImportData::FMeshFace> LODFaces;
-	TArray<SkeletalMeshImportData::FVertInfluence> LODInfluences;
-	TArray<int32> LODPointToRawMap;
-	SkeletalMeshImportData.CopyLODImportData(LODPoints, LODWedges, LODFaces, LODInfluences, LODPointToRawMap);
-
-	FSkeletalMeshLODModel LODModel;
-	LODModel.NumTexCoords = FMath::Max<uint32>(1, SkeletalMeshImportData.NumTexCoords);
-	
 	const auto SkeletalMesh = FPskPsaUtils::LocalCreate<USkeletalMesh>(USkeletalMesh::StaticClass(), Parent, Name.ToString(), Flags);
 	SkeletalMesh->PreEditChange(nullptr);
 	SkeletalMesh->InvalidateDeriveDataCacheGUID();
@@ -165,23 +156,22 @@ UObject* UPskFactory::Import(const FString& Filename, UObject* Parent, const FNa
 
 	SkeletalMesh->GetRefBasesInvMatrix().Empty();
 	SkeletalMesh->GetMaterials().Empty();
-	SkeletalMesh->SetHasVertexColors(true);
+	SkeletalMesh->SetHasVertexColors(Data.bHasVertexColors);
+	if (Data.bHasVertexColors) SkeletalMesh->SetVertexColorGuid(FGuid::NewGuid());
 
 	FSkeletalMeshModel* ImportedResource = SkeletalMesh->GetImportedModel();
-	auto& SkeletalMeshLODInfos = SkeletalMesh->GetLODInfoArray();
-	SkeletalMeshLODInfos.Empty();
-	SkeletalMeshLODInfos.Add(FSkeletalMeshLODInfo());
-	SkeletalMeshLODInfos[0].ReductionSettings.NumOfTrianglesPercentage = 1.0f;
-	SkeletalMeshLODInfos[0].ReductionSettings.NumOfVertPercentage = 1.0f;
-	SkeletalMeshLODInfos[0].ReductionSettings.MaxDeviationPercentage = 0.0f;
-	SkeletalMeshLODInfos[0].LODHysteresis = 0.02f;
+	SkeletalMesh->SetNumSourceModels(0);
+	FSkeletalMeshLODInfo& LODInfo = SkeletalMesh->AddLODInfo();
+	LODInfo.ReductionSettings.NumOfTrianglesPercentage = 1.0f;
+	LODInfo.ReductionSettings.NumOfVertPercentage = 1.0f;
+	LODInfo.ReductionSettings.MaxDeviationPercentage = 0.0f;
+	LODInfo.LODHysteresis = 0.02f;
 
 	ImportedResource->LODModels.Empty();
 	ImportedResource->LODModels.Add(new FSkeletalMeshLODModel);
 	SkeletalMesh->SetRefSkeleton(RefSkeleton);
 	SkeletalMesh->CalculateInvRefMatrices();
 
-	SkeletalMesh->SaveLODImportedData(0, SkeletalMeshImportData);
 	FSkeletalMeshBuildSettings BuildOptions;
 	BuildOptions.bRemoveDegenerates = true;
 	BuildOptions.bRecomputeNormals = !Data.bHasVertexNormals;
@@ -190,52 +180,46 @@ UObject* UPskFactory::Import(const FString& Filename, UObject* Parent, const FNa
 	SkeletalMesh->GetLODInfo(0)->BuildSettings = BuildOptions;
 	SkeletalMesh->SetImportedBounds(FBoxSphereBounds(FBoxSphereBounds3f(FBox3f(SkeletalMeshImportData.Points))));
 
-	auto& MeshBuilderModule = IMeshBuilderModule::GetForRunningPlatform();
-	const FSkeletalMeshBuildParameters SkeletalMeshBuildParameters(SkeletalMesh, GetTargetPlatformManagerRef().GetRunningTargetPlatform(), 0, false);
-	if (!MeshBuilderModule.BuildSkeletalMesh(SkeletalMeshBuildParameters))
-	{
-		SkeletalMesh->MarkAsGarbage();
-		return nullptr;
-	}
+    for (const auto& Material : SkeletalMeshImportData.Materials)
+    {
+        const FName SlotName(*Material.MaterialImportName);
+        SkeletalMesh->GetMaterials().Add(FSkeletalMaterial(Material.Material.Get(), true, false, SlotName, SlotName));
+    }
 
-	for (auto Material : SkeletalMeshImportData.Materials)
-	{
-		SkeletalMesh->GetMaterials().Add(FSkeletalMaterial(Material.Material.Get()));
-	}
+    // Keep morph source positions in the mesh description so rebuilding/saving preserves them.
+    int32 MorphOffset = 0;
+    for (const VMorphInfo& Info : Data.MorphInfos)
+    {
+        SkeletalMeshImportData.MorphTargetNames.Add(UTF8_TO_TCHAR(Info.Name));
+        FSkeletalMeshImportData& Morph = SkeletalMeshImportData.MorphTargets.AddDefaulted_GetRef();
+        TSet<uint32>& Modified = SkeletalMeshImportData.MorphTargetModifiedPoints.AddDefaulted_GetRef();
+        for (int32 Index = 0; Index < Info.VertexCount; ++Index)
+        {
+            const VMorphData& Delta = Data.MorphDatas[MorphOffset + Index];
+            if (!Modified.Contains(Delta.PointIdx))
+            {
+                Modified.Add(Delta.PointIdx);
+                Morph.Points.Add(SkeletalMeshImportData.Points[Delta.PointIdx] + Delta.PositionDelta * FVector3f(1, -1, 1));
+            }
+        }
+        MorphOffset += Info.VertexCount;
+    }
 
-	// currently not working
-	if (Data.bHasMorphData)
-	{
-		auto DataPosition = 0;
-		
-		for (auto [Name, VertexCount] : Data.MorphInfos)
-		{
-			auto MorphTarget = NewObject<UMorphTarget>(SkeletalMesh, Name);
-			
-			TArray<FMorphTargetDelta> Deltas;
-			for (auto i = DataPosition; i < DataPosition + VertexCount; i++)
-			{
-				auto [PositionDelta, TangentZDelta, PointIdx] = Data.MorphDatas[i];
-				
-				FMorphTargetDelta Delta;
-				Delta.PositionDelta = PositionDelta;
-				Delta.TangentZDelta = TangentZDelta;
-				Delta.SourceIdx = PointIdx;
-				Deltas.Add(Delta);
-			}
-			MorphTarget->PopulateDeltas(Deltas, 0, LODModel.Sections);
-			MorphTarget->BaseSkelMesh = SkeletalMesh;
-			SkeletalMesh->GetMorphTargets().Add(MorphTarget);
-			DataPosition += VertexCount;
-		}
-		
-		SkeletalMesh->InitMorphTargetsAndRebuildRenderData();
-	}
-	
-	SkeletalMesh->PostEditChange();
-	
-	SkeletalMesh->SetSkeleton(Skeleton);
-	Skeleton->MergeAllBonesToBoneTree(SkeletalMesh);
+    FMeshDescription MeshDescription;
+    if (!SkeletalMeshImportData.GetMeshDescription(SkeletalMesh, &BuildOptions, MeshDescription))
+    {
+        UE_LOG(LogUnrealPSKPSA, Error, TEXT("Failed to create skeletal mesh description for %s"), *Filename);
+        SkeletalMesh->MarkAsGarbage();
+        Skeleton->MarkAsGarbage();
+        return nullptr;
+    }
+    SkeletalMesh->CreateMeshDescription(0, MoveTemp(MeshDescription));
+    SkeletalMesh->CommitMeshDescription(0);
+    SkeletalMesh->GetAssetImportData()->Update(Filename);
+    SkeletalMesh->SetSkeleton(Skeleton);
+    Skeleton->MergeAllBonesToBoneTree(SkeletalMesh);
+    SkeletalMesh->PostEditChange();
+    FAssetCompilingManager::Get().FinishCompilationForObjects({SkeletalMesh});
 	
 	FAssetRegistryModule::AssetCreated(SkeletalMesh);
 	SkeletalMesh->MarkPackageDirty();
@@ -269,9 +253,9 @@ void UPskFactory::ProcessSkeleton(const FSkeletalMeshImportData& ImportData, con
     for (auto b = 0; b < OutRefSkeleton.GetNum(); b++)
     {
         const auto Parent = OutRefSkeleton.GetParentIndex(b);
-        auto Depth  = 1.0f;
+        int32 Depth = 1;
 
-        SkeletalDepths[b] = 1.0f;
+        SkeletalDepths[b] = 1;
         if (Parent != INDEX_NONE)
         {
             Depth += SkeletalDepths[Parent];

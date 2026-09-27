@@ -1,4 +1,6 @@
-﻿#pragma once
+#pragma once
+
+#include "CoreMinimal.h"
 
 struct VChunkHeader
 {
@@ -12,7 +14,7 @@ struct VVertex
 {
 	int PointIndex;
 	float U, V;
-	char MatIndex;
+	uint8 MatIndex;
 	char Reserved;
 	short Pad;
 };
@@ -20,8 +22,8 @@ struct VVertex
 struct VTriangle
 {
 	int WedgeIndex[3];
-	char MatIndex;
-	char AuxMatIndex;
+	uint8 MatIndex;
+	uint8 AuxMatIndex;
 	unsigned SmoothingGroups;
 };
 

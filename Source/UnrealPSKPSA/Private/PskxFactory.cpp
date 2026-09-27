@@ -1,8 +1,10 @@
-﻿#include "PskxFactory.h"
+#include "PskxFactory.h"
 
 #include "PskPsaUtils.h"
 #include "PskReader.h"
 #include "RawMesh.h"
+#include "AssetCompilingManager.h"
+#include "EditorFramework/AssetImportData.h"
 #include "Materials/MaterialInstanceConstant.h"
 
 UObject* UPskxFactory::Import(const FString& Filename, UObject* Parent, const FName Name, const EObjectFlags Flags, TMap<FString, FString> MaterialNameToPathMap)
@@ -10,19 +12,6 @@ UObject* UPskxFactory::Import(const FString& Filename, UObject* Parent, const FN
 	auto Data = FPskReader(Filename);
 	if (!Data.bIsValid) return nullptr;
 	
-	TArray<FColor> VertexColorsByPoint;
-	VertexColorsByPoint.Init(FColor::Black, Data.VertexColors.Num());
-	if (Data.bHasVertexColors)
-	{
-		for (auto i = 0; i < Data.Wedges.Num(); i++)
-		{
-			auto FixedColor = Data.VertexColors[i];
-			Swap(FixedColor.R, FixedColor.B);
-			VertexColorsByPoint[Data.Wedges[i].PointIndex] = FixedColor;
-		}
-	}
-
-	// TODO STATIC MESH DESCRIPTION
 	auto RawMesh = FRawMesh();
 	for (auto Vertex : Data.Vertices)
 	{
@@ -35,7 +24,7 @@ UObject* UPskxFactory::Import(const FString& Filename, UObject* Parent, const FN
 	for (const auto PskFace : Data.Faces)
 	{
 		RawMesh.FaceMaterialIndices.Add(PskFace.MatIndex);
-		RawMesh.FaceSmoothingMasks.Add(1);
+		RawMesh.FaceSmoothingMasks.Add(PskFace.SmoothingGroups);
 
 		for (auto VertexIndex : WindingOrder)
 		{
@@ -43,7 +32,13 @@ UObject* UPskxFactory::Import(const FString& Filename, UObject* Parent, const FN
 			const auto PskWedge = Data.Wedges[WedgeIndex];
 
 			RawMesh.WedgeIndices.Add(PskWedge.PointIndex);
-			RawMesh.WedgeColors.Add(Data.bHasVertexColors ? VertexColorsByPoint[PskWedge.PointIndex] : FColor::Black);
+			FColor Color = FColor::White;
+            if (Data.bHasVertexColors)
+            {
+                Color = Data.VertexColors[Data.VertexColors.Num() == Data.Wedges.Num() ? WedgeIndex : PskWedge.PointIndex];
+                Swap(Color.R, Color.B);
+            }
+            RawMesh.WedgeColors.Add(Color);
 			RawMesh.WedgeTexCoords[0].Add(FVector2f(PskWedge.U, PskWedge.V));
 			for (auto UVIndex = 0; UVIndex < Data.ExtraUVs.Num(); UVIndex++)
 			{
@@ -51,7 +46,7 @@ UObject* UPskxFactory::Import(const FString& Filename, UObject* Parent, const FN
 				RawMesh.WedgeTexCoords[UVIndex+1].Add(UV);
 			}
 			
-			RawMesh.WedgeTangentZ.Add(Data.bHasVertexNormals ? Data.Normals[PskWedge.PointIndex] * FVector3f(1, -1, 1) : FVector3f::ZeroVector);
+			RawMesh.WedgeTangentZ.Add(Data.bHasVertexNormals ? Data.Normals[Data.Normals.Num() == Data.Vertices.Num() ? PskWedge.PointIndex : WedgeIndex] * FVector3f(1, -1, 1) : FVector3f::ZeroVector);
 			RawMesh.WedgeTangentY.Add(FVector3f::ZeroVector);
 			RawMesh.WedgeTangentX.Add(FVector3f::ZeroVector);
 		}
@@ -76,7 +71,7 @@ UObject* UPskxFactory::Import(const FString& Filename, UObject* Parent, const FN
 		
 		auto MaterialAdd = FPskPsaUtils::LocalFindOrCreate<UMaterialInstanceConstant>(UMaterialInstanceConstant::StaticClass(), MatParent, PskMaterial.MaterialName, Flags);
 
-		StaticMesh->GetStaticMaterials().Add(FStaticMaterial(MaterialAdd));
+		StaticMesh->GetStaticMaterials().Add(FStaticMaterial(MaterialAdd, FName(UTF8_TO_TCHAR(PskMaterial.MaterialName)), FName(UTF8_TO_TCHAR(PskMaterial.MaterialName))));
 		StaticMesh->GetSectionInfoMap().Set(0, i, FMeshSectionInfo(i));
 	}
 	
@@ -89,12 +84,13 @@ UObject* UPskxFactory::Import(const FString& Filename, UObject* Parent, const FN
 	SourceModel.BuildSettings.bUseMikkTSpace = true;
 	SourceModel.SaveRawMesh(RawMesh);
 
+	StaticMesh->GetAssetImportData()->Update(Filename);
 	StaticMesh->Build();
 	StaticMesh->PostEditChange();
+	FAssetCompilingManager::Get().FinishCompilationForObjects({StaticMesh});
 	FAssetRegistryModule::AssetCreated(StaticMesh);
 	StaticMesh->MarkPackageDirty();
 	
-	FGlobalComponentReregisterContext RecreateComponents;
 
 	return StaticMesh;
 }
