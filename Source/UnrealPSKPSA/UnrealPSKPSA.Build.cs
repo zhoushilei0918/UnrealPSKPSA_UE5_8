@@ -9,7 +9,9 @@ public class UnrealPSKPSA : ModuleRules
         PrivateDependencyModuleNames.AddRange(new[]
         {
             "AssetRegistry", "MeshDescription", "RawMesh", "RenderCore",
-            "MeshBuilder", "MeshUtilitiesCommon", "TargetPlatform"
+            "MeshBuilder", "MeshUtilitiesCommon", "TargetPlatform",
+            "AnimationDataController", "AssetTools", "Slate", "SlateCore",
+            "ToolMenus", "ContentBrowser", "DesktopPlatform", "PropertyEditor", "Json"
         });
     }
 }

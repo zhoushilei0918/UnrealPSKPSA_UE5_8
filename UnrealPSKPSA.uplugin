@@ -1,9 +1,9 @@
 {
     "FileVersion": 3,
-    "Version": 2,
-    "VersionName": "2.0.0",
-    "FriendlyName": "Unreal PSK / PSKX Importer",
-    "Description": "Imports ActorX PSK skeletal meshes and PSKX static meshes into Unreal Editor 5.8.",
+    "Version": 3,
+    "VersionName": "2.1.0",
+    "FriendlyName": "Unreal PSK / PSKX / PSA Importer",
+    "Description": "Imports PSK skeletal meshes, PSKX static meshes and PSA animations, with a target mesh panel and Skeletal Mesh context menu in Unreal Editor 5.8.",
     "Category": "Importers",
     "EngineVersion": "5.8.0",
     "CanContainContent": false,
