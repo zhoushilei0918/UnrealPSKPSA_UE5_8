@@ -62,6 +62,7 @@ Confirm the target mesh and destination, and leave the source on **自动识别�
 | Destination / 保存路径 | Use a UE content path, such as `/Game/Characters/Animations` |
 | Replace existing / 覆盖同名动画 | Off by default; only overwrites same-name animations using the same Skeleton |
 | Repair invalid keys / 修复无效关键帧 | Off by default; interpolates interior gaps, copies the nearest valid key at either end, and fails if an entire bone track has no valid keys |
+| Use mesh reference scale / 使用模型参考缩放 | Off by default; enable and reimport unusually stretched animations to use each target bone's reference scale. Ignores PSA scale effects while retaining position and rotation |
 
 Add from Folder reads only the selected directory. Add subdirectories separately. Duplicate files are not added twice.
 

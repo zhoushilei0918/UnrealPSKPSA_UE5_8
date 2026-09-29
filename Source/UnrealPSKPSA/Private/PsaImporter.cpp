@@ -73,6 +73,8 @@ bool FPsaImporter::ImportFile(const FString& Filename, USkeletalMesh* Mesh, cons
     const FActorXOrientation Orientation = GetActorXMeshOrientation(Mesh);
     const FQuat4f BasisRotation = Orientation.Rotation();
     TArray<FString> Warnings;
+    if (Options.bUseReferenceScale)
+        Warnings.Add(TEXT("已使用模型参考缩放：忽略 PSA 的动画缩放（包括原有缩放效果），位置和旋转保持正常导入。"));
     if (Reader.bHasUEViewerBoneMetadata)
         Warnings.Add(TEXT("此 PSA 使用 UEViewer 占位层级，按骨骼名称匹配并沿用目标网格层级；请确保选择对应人物的模型。"));
     if (Reader.Bones.Num() > Mapping.Num())
@@ -139,6 +141,7 @@ bool FPsaImporter::ImportFile(const FString& Filename, USkeletalMesh* Mesh, cons
         for (const FPsaBoneMapping& Bone : Mapping)
         {
             const FName BoneName = Ref.GetBoneName(Bone.TargetIndex);
+            const FVector3f ReferenceScale(Ref.GetRefBonePose()[Bone.TargetIndex].GetScale3D());
             TArray<FVector3f> Positions, Scales;
             TArray<FQuat4f> Rotations;
             Positions.Reserve(Info.NumRawFrames); Rotations.Reserve(Info.NumRawFrames); Scales.Reserve(Info.NumRawFrames);
@@ -163,9 +166,12 @@ bool FPsaImporter::ImportFile(const FString& Filename, USkeletalMesh* Mesh, cons
                 Rotation.Normalize();
                 if (!Rotations.IsEmpty() && (Rotations.Last() | Rotation) < 0) Rotation = Rotation * -1.0f;
                 Rotations.Add(Rotation);
-                const FVector3f ReferenceScale(Ref.GetRefBonePose()[Bone.TargetIndex].GetScale3D());
-                FVector3f Scale = Reader.ScaleKeys.IsEmpty() ? FVector3f::OneVector : Reader.ScaleKeys[KeyIndex].Scale;
-                if (bFModel) Scale *= ReferenceScale;
+                FVector3f Scale = ReferenceScale;
+                if (!Options.bUseReferenceScale)
+                {
+                    Scale = Reader.ScaleKeys.IsEmpty() ? FVector3f::OneVector : Reader.ScaleKeys[KeyIndex].Scale;
+                    if (bFModel) Scale *= ReferenceScale;
+                }
                 Scales.Add(Scale);
             }
             bTracksOK &= Controller.AddBoneCurve(BoneName, false);

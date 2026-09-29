@@ -11,6 +11,7 @@ struct FPsaImportOptions
     bool bAutoDetectSource = true;
     bool bReplaceExisting = false;
     bool bRepairInvalidKeys = false;
+    bool bUseReferenceScale = false;
     bool bSaveAssets = true;
     float TranslationScale = 1.0f;
 };

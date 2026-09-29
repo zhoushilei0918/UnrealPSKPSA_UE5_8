@@ -125,11 +125,14 @@ bool FPsaDirectoryImportTest::RunTest(const FString& Parameters)
                 const FQuat ExpectedRotation(Key.Rotation.X, -Key.Rotation.Y, Key.Rotation.Z, Bone.SourceIndex == 0 ? -Key.Rotation.W : Key.Rotation.W);
                 TestTrue(TEXT("Position restored to UE coordinates"), Raw.GetTranslation().Equals(ExpectedPosition, 0.001));
                 TestTrue(TEXT("Root/non-root quaternion conversion"), Raw.GetRotation().Equals(ExpectedRotation, 0.001));
+                const FVector SourceScale = Reader.ScaleKeys.IsEmpty() ? FVector::OneVector : FVector(Reader.ScaleKeys[Frame * Info.TotalBones + Bone.SourceIndex].Scale);
+                TestTrue(TEXT("Default keeps source animation scale"), Raw.GetScale3D().Equals(SourceScale * Mesh->GetRefSkeleton().GetRefBonePose()[Bone.TargetIndex].GetScale3D(), 0.001));
                 FTransform Evaluated;
                 const double Time = Frame / Sequence->GetDataModel()->GetFrameRate().AsDecimal();
                 Sequence->GetBoneTransform(Evaluated, FSkeletonPoseBoneIndex(Bone.TargetIndex), FAnimExtractContext(Time, false), false);
                 TestFalse(TEXT("Playback transform finite"), Evaluated.ContainsNaN());
                 TestTrue(TEXT("Compressed playback translation"), Evaluated.GetTranslation().Equals(Raw.GetTranslation(), 0.1));
+                TestTrue(TEXT("Compressed playback scale"), Evaluated.GetScale3D().Equals(Raw.GetScale3D(), 0.001));
                 TestTrue(*FString::Printf(TEXT("Compressed playback rotation %s %s frame %d error %.6f"), *File, *Name.ToString(), Frame,
                     Evaluated.GetRotation().AngularDistance(Raw.GetRotation())), Evaluated.GetRotation().AngularDistance(Raw.GetRotation()) < 0.01);
             }

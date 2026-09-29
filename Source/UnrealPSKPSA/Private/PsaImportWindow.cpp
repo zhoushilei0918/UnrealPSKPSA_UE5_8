@@ -172,6 +172,7 @@ namespace
             Options.bFModel = Settings->Source == EPsaSource::FModel;
             Options.bReplaceExisting = Settings->bReplaceExisting;
             Options.bRepairInvalidKeys = Settings->bRepairInvalidKeys;
+            Options.bUseReferenceScale = Settings->bUseReferenceScale;
             Options.TranslationScale = Settings->TranslationScale;
             LastImported.Reset();
             ImportLog.Reset();

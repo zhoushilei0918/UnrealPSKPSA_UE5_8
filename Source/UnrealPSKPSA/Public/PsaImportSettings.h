@@ -33,6 +33,9 @@ public:
     UPROPERTY(EditAnywhere, Category="导入选项", meta=(DisplayName="修复无效关键帧", ToolTip="默认关闭。按同一动画、同一骨骼补帧：中间缺帧使用前后有效帧插值，首尾缺帧全部复制最近有效帧；整条轨道均无效则失败。无效姿态的位置、旋转和缩放一起修复。补帧是估算，不会恢复丢失的原始动作。"))
     bool bRepairInvalidKeys = false;
 
+    UPROPERTY(EditAnywhere, Category="导入选项", meta=(DisplayName="使用模型参考缩放", ToolTip="默认关闭。开启后忽略 PSA 的动画缩放，改用目标网格各骨骼的参考缩放；位置和旋转不变。适用于异常拉伸的动画，也会忽略原本有意制作的缩放效果。"))
+    bool bUseReferenceScale = false;
+
     UPROPERTY(EditAnywhere, AdvancedDisplay, Category="导入选项", meta=(DisplayName="位置缩放", ClampMin="0.0001", ClampMax="10000.0", ToolTip="默认 1。仅当 FBX 模型采用不同单位时调整。"))
     float TranslationScale = 1.0f;
 };
