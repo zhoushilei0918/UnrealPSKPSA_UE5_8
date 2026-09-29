@@ -31,7 +31,7 @@ UObject* UPskFactory::Import(const FString& Filename, UObject* Parent, const FNa
 
     if (Data.Bones.IsEmpty() || Data.Influences.IsEmpty())
     {
-        UE_LOG(LogUnrealPSKPSA, Error, TEXT("PSK skeletal meshes require bones and weights. Use PSKX for static meshes."));
+        UE_LOG(LogUnrealPSKPSA, Error, TEXT("PSK/PSKX 骨骼网格必须同时包含骨骼和蒙皮权重；数据不完整，无法导入为骨骼网格。"));
         return nullptr;
     }
 
@@ -109,8 +109,13 @@ UObject* UPskFactory::Import(const FString& Filename, UObject* Parent, const FNa
 		PskTransform.SetRotation(FQuat4f(PskBonePos.Orientation.X, -PskBonePos.Orientation.Y, PskBonePos.Orientation.Z, PskBonePos.Orientation.W).GetNormalized());
         if (Bone.ParentIndex == INDEX_NONE)
         {
+            // ActorX stores the root bind quaternion with the opposite W convention
+            // to child-local bind rotations. Restore it BEFORE the user yaw; otherwise
+            // a rotated source root puts the skeleton on the opposite side of its skin.
+            FQuat4f RootRotation = PskTransform.GetRotation();
+            RootRotation.W *= -1.0f;
             PskTransform.SetTranslation(BasisRotation.RotateVector(PskTransform.GetTranslation()));
-            PskTransform.SetRotation((BasisRotation * PskTransform.GetRotation()).GetNormalized());
+            PskTransform.SetRotation((BasisRotation * RootRotation).GetNormalized());
         }
 
 		SkeletalMeshImportData::FJointPos BonePos;

@@ -6,7 +6,6 @@
 #include "Animation/AnimData/IAnimationDataController.h"
 #include "Animation/AnimData/IAnimationDataModel.h"
 #include "Animation/Skeleton.h"
-#include "AssetCompilingManager.h"
 #include "AssetRegistry/AssetRegistryModule.h"
 #include "AssetToolsModule.h"
 #include "EditorFramework/AssetImportData.h"
@@ -21,6 +20,7 @@
 bool FPsaImporter::MatchBones(const FPsaReader& Reader, const USkeletalMesh* Mesh, TArray<FPsaBoneMapping>& Mapping, FString& Error)
 {
     Mapping.Reset();
+    Error.Reset();
     if (!Reader.bIsValid) { Error = Reader.Error; return false; }
     if (!Mesh || !Mesh->GetSkeleton()) { Error = TEXT("请选择具有 Skeleton 的 Skeletal Mesh（骨骼网格体）。"); return false; }
     const FReferenceSkeleton& Ref = Mesh->GetRefSkeleton();
@@ -36,7 +36,7 @@ bool FPsaImporter::MatchBones(const FPsaReader& Reader, const USkeletalMesh* Mes
         const FName SourceParent = Bone.ParentIndex == INDEX_NONE ? NAME_None : FName(UTF8_TO_TCHAR(Reader.Bones[Bone.ParentIndex].Name));
         const int32 TargetParentIndex = Ref.GetParentIndex(TargetIndex);
         const FName TargetParent = TargetParentIndex == INDEX_NONE ? NAME_None : Ref.GetBoneName(TargetParentIndex);
-        if (SourceParent != TargetParent)
+        if (!Reader.bHasUEViewerBoneMetadata && SourceParent != TargetParent)
             Conflicts.Add(FString::Printf(TEXT("%s（PSA 父骨骼：%s；目标：%s）"), *Name.ToString(), *SourceParent.ToString(), *TargetParent.ToString()));
         Mapping.Add({SourceIndex, TargetIndex});
     }
@@ -56,6 +56,7 @@ bool FPsaImporter::ImportFile(const FString& Filename, USkeletalMesh* Mesh, cons
     Error.Reset(); Summary.Reset();
     if (OutWarnings) OutWarnings->Reset();
     const FPsaReader Reader(Filename, Options.bRepairInvalidKeys);
+    const bool bFModel = Options.bAutoDetectSource ? !Reader.bHasUEViewerBoneMetadata : Options.bFModel;
     TArray<FPsaBoneMapping> Mapping;
     if (!MatchBones(Reader, Mesh, Mapping, Error)) return false;
     if (!FMath::IsFinite(Options.TranslationScale) || Options.TranslationScale <= 0)
@@ -72,6 +73,8 @@ bool FPsaImporter::ImportFile(const FString& Filename, USkeletalMesh* Mesh, cons
     const FActorXOrientation Orientation = GetActorXMeshOrientation(Mesh);
     const FQuat4f BasisRotation = Orientation.Rotation();
     TArray<FString> Warnings;
+    if (Reader.bHasUEViewerBoneMetadata)
+        Warnings.Add(TEXT("此 PSA 使用 UEViewer 占位层级，按骨骼名称匹配并沿用目标网格层级；请确保选择对应人物的模型。"));
     if (Reader.Bones.Num() > Mapping.Num())
         Warnings.Add(FString::Printf(TEXT("忽略 %d 根目标网格中不存在的源骨骼。"), Reader.Bones.Num() - Mapping.Num()));
     if (Ref.GetRawBoneNum() > Mapping.Num())
@@ -95,7 +98,7 @@ bool FPsaImporter::ImportFile(const FString& Filename, USkeletalMesh* Mesh, cons
         { Error = TEXT("同名资产的类型或 Skeleton 不匹配，未覆盖：") + PackageName; return false; }
         if (Sequence)
         {
-            FAssetCompilingManager::Get().FinishCompilationForObjects({Sequence});
+            Sequence->WaitOnExistingCompression();
             Sequence->Modify();
         }
         else Sequence = NewObject<UAnimSequence>(Package, FName(*AssetName), RF_Public | RF_Standalone | RF_Transactional);
@@ -115,7 +118,8 @@ bool FPsaImporter::ImportFile(const FString& Filename, USkeletalMesh* Mesh, cons
         Controller.ResetModel(false);
         // FModel writes NumFrames / SequenceLength. UE uses NumFrames - 1 frame intervals.
         double Rate = Info.AnimRate;
-        if (Options.bFModel && Info.NumRawFrames > 1) Rate *= double(Info.NumRawFrames - 1) / Info.NumRawFrames;
+        // UEViewer UE4 exports also encode NumFrames / SequenceLength.
+        if ((bFModel || Reader.bHasUEViewerBoneMetadata) && Info.NumRawFrames > 1) Rate *= double(Info.NumRawFrames - 1) / Info.NumRawFrames;
         if (FMath::Abs(Rate - FMath::RoundToDouble(Rate)) < 0.0001) Rate = FMath::RoundToDouble(Rate);
         const FFrameRate FrameRate(FMath::Max(1, FMath::RoundToInt(Rate * 10000.0)), 10000);
         if (Existing && Sequence->GetDataModel()->GetFrameRate() != FrameRate)
@@ -144,8 +148,10 @@ bool FPsaImporter::ImportFile(const FString& Filename, USkeletalMesh* Mesh, cons
                 const FPsaKey& Key = Reader.Keys[KeyIndex];
                 FVector3f Position = Key.Position * FVector3f(1, -1, 1) * Options.TranslationScale;
                 FQuat4f Rotation(Key.Rotation.X, -Key.Rotation.Y, Key.Rotation.Z, Key.Rotation.W);
-                // FModel flips W only on root; UEViewer/legacy ActorX flips it on every bone.
-                if (!Options.bFModel || Bone.SourceIndex == 0) Rotation.W *= -1;
+                // UEViewer UE4 child tracks use the same local bind convention as
+                // the PSK skeleton: restore Y, with the extra W correction on root.
+                // The legacy explicit mode remains available for other exporters.
+                if ((!bFModel && !Reader.bHasUEViewerBoneMetadata) || Bone.SourceIndex == 0) Rotation.W *= -1;
                 // The mesh basis is baked into the root only; child local tracks inherit it.
                 // Rotating every local track would accumulate the yaw down the hierarchy.
                 if (Bone.SourceIndex == 0)
@@ -159,7 +165,7 @@ bool FPsaImporter::ImportFile(const FString& Filename, USkeletalMesh* Mesh, cons
                 Rotations.Add(Rotation);
                 const FVector3f ReferenceScale(Ref.GetRefBonePose()[Bone.TargetIndex].GetScale3D());
                 FVector3f Scale = Reader.ScaleKeys.IsEmpty() ? FVector3f::OneVector : Reader.ScaleKeys[KeyIndex].Scale;
-                if (Options.bFModel) Scale *= ReferenceScale;
+                if (bFModel) Scale *= ReferenceScale;
                 Scales.Add(Scale);
             }
             bTracksOK &= Controller.AddBoneCurve(BoneName, false);
@@ -176,7 +182,10 @@ bool FPsaImporter::ImportFile(const FString& Filename, USkeletalMesh* Mesh, cons
         if (!Sequence->AssetImportData) Sequence->AssetImportData = NewObject<UAssetImportData>(Sequence);
         Sequence->AssetImportData->Update(Filename);
         Sequence->PostEditChange();
-        FAssetCompilingManager::Get().FinishCompilationForObjects({Sequence});
+        // UE 5.8's animation compiler does not implement the generic
+        // FinishCompilationForObjects hook. Wait on animation compression directly
+        // before saving or exposing the sequence for playback/another overwrite.
+        Sequence->WaitOnExistingCompression();
         Sequence->MarkPackageDirty();
         if (!Existing) FAssetRegistryModule::AssetCreated(Sequence);
         Imported.Add(Sequence);
@@ -194,6 +203,7 @@ bool FPsaImporter::ImportFile(const FString& Filename, USkeletalMesh* Mesh, cons
     Summary = FString::Printf(TEXT("%s：%d 个动画；匹配 %d/%d 根目标骨骼。"),
         *FPaths::GetCleanFilename(Filename), CreatedCount, Mapping.Num(), Ref.GetRawBoneNum());
     Summary += TEXT("朝向：") + Orientation.Description() + TEXT("。");
+    Summary += FString::Printf(TEXT("来源：%s%s。"), bFModel ? TEXT("FModel") : TEXT("UEViewer / ActorX"), Options.bAutoDetectSource ? TEXT("（自动识别）") : TEXT("（手动选择）"));
     // Keep warnings in the legacy summary for callers that do not request separate diagnostics.
     if (!OutWarnings && !Warnings.IsEmpty()) Summary += FString::Join(Warnings, TEXT(""));
     return true;

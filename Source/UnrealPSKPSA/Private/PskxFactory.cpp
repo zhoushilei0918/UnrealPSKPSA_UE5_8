@@ -1,4 +1,6 @@
 #include "PskxFactory.h"
+#include "PskFactory.h"
+#include "UnrealPSKPSA.h"
 #include "ActorXImportWindow.h"
 #include "Misc/App.h"
 
@@ -9,19 +11,48 @@
 #include "EditorFramework/AssetImportData.h"
 #include "Materials/MaterialInstanceConstant.h"
 
+bool UPskxFactory::FactoryCanImport(const FString& Filename)
+{
+    // AssetTools queries this before checking existing asset types. Reset for every
+    // file so a mixed static/skeletal batch never inherits the preceding file's type.
+    SupportedClass = UStaticMesh::StaticClass();
+    if (!FPaths::GetExtension(Filename).Equals(FactoryExtension, ESearchCase::IgnoreCase)) return false;
+    const FPskReader Data(Filename);
+    if (!Data.bIsValid) return false;
+    if (!Data.Bones.IsEmpty() || !Data.Influences.IsEmpty()) SupportedClass = USkeletalMesh::StaticClass();
+    return true;
+}
+
 UObject* UPskxFactory::FactoryCreateFile(UClass* InClass, UObject* InParent, FName InName, EObjectFlags Flags, const FString& Filename, const TCHAR* Params, FFeedbackContext* Warn, bool& bOutOperationCanceled)
 {
     bOutOperationCanceled = false;
     if (!IsAutomatedImport() && !IsRunningCommandlet() && !FApp::IsUnattended() &&
         !ShowActorXImportOptions(Orientation, Filename))
     { bOutOperationCanceled = true; return nullptr; }
-    return Import(Filename, InParent, InName, Flags, {}, Orientation);
+    UObject* Result = Import(Filename, InParent, InName, Flags, {}, Orientation);
+    if (Result) SupportedClass = Result->GetClass();
+    return Result;
 }
 
 UObject* UPskxFactory::Import(const FString& Filename, UObject* Parent, const FName Name, const EObjectFlags Flags, TMap<FString, FString> MaterialNameToPathMap, const FActorXOrientation& Orientation)
 {
 	auto Data = FPskReader(Filename);
 	if (!Data.bIsValid) return nullptr;
+    const bool bSkeletal = !Data.Bones.IsEmpty() || !Data.Influences.IsEmpty();
+    UClass* MeshClass = bSkeletal ? USkeletalMesh::StaticClass() : UStaticMesh::StaticClass();
+    Parent->GetOutermost()->FullyLoad();
+    if (const UObject* Existing = FindObject<UObject>(Parent->GetOutermost(), *Name.ToString()))
+    {
+        if (!Existing->IsA(MeshClass))
+        {
+            UE_LOG(LogUnrealPSKPSA, Error, TEXT("PSKX 检测为 %s，但同名资产类型为 %s。请使用新名称或目录导入。"), *MeshClass->GetName(), *Existing->GetClass()->GetName());
+            return nullptr;
+        }
+    }
+    // PSKX is also used for extended skeletal meshes (e.g. 32-bit face indices).
+    // Reuse the full skeletal path, including weights, morphs and saved orientation.
+    // Incomplete skeletal data must fail validation instead of silently losing bones.
+    if (bSkeletal) return UPskFactory::Import(Filename, Parent, Name, Flags, MoveTemp(MaterialNameToPathMap), Orientation);
 	const FQuat4f BasisRotation = Orientation.Rotation();
 	
 	auto RawMesh = FRawMesh();

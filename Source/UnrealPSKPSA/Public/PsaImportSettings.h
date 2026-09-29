@@ -9,7 +9,8 @@ UENUM()
 enum class EPsaSource : uint8
 {
     FModel UMETA(DisplayName="FModel / CUE4Parse"),
-    ActorX UMETA(DisplayName="UEViewer / Legacy ActorX")
+    ActorX UMETA(DisplayName="UEViewer / Legacy ActorX"),
+    Auto UMETA(DisplayName="自动识别（推荐）")
 };
 
 UCLASS()
@@ -23,8 +24,8 @@ public:
     UPROPERTY(EditAnywhere, Category="目标", meta=(DisplayName="保存路径", ToolTip="UE 内容路径，例如 /Game/Characters/Animations。"))
     FString Destination = TEXT("/Game/Animations");
 
-    UPROPERTY(EditAnywhere, Category="导入选项", meta=(DisplayName="PSA 导出来源", ToolTip="FModel 模式还原其根骨骼旋转和动画时长。"))
-    EPsaSource Source = EPsaSource::FModel;
+    UPROPERTY(EditAnywhere, Category="导入选项", meta=(DisplayName="PSA 导出来源", ToolTip="默认按每个文件识别 UEViewer 特征，否则沿用 FModel；也可手动指定来源。UEViewer 未提供真实层级时，按骨骼名匹配并沿用目标网格层级。"))
+    EPsaSource Source = EPsaSource::Auto;
 
     UPROPERTY(EditAnywhere, Category="导入选项", meta=(DisplayName="覆盖同名动画", ToolTip="默认不覆盖，自动生成不同名称。勾选后仅覆盖使用相同 Skeleton 的动画序列。"))
     bool bReplaceExisting = false;

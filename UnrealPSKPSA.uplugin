@@ -3,7 +3,7 @@
     "Version": 5,
     "VersionName": "2.3.0",
     "FriendlyName": "Unreal PSK / PSKX / PSA Importer",
-    "Description": "Imports PSK skeletal meshes, PSKX static meshes and PSA animations, with optional invalid key repair, a toolbar panel and Skeletal Mesh context menu in Unreal Editor 5.8.",
+    "Description": "Imports PSK and PSKX meshes with skeletal detection, and FModel or UEViewer PSA animations with automatic source detection, invalid key repair and filtered logs in Unreal Editor 5.8.",
     "Category": "Importers",
     "EngineVersion": "5.8.0",
     "CanContainContent": false,

@@ -9,6 +9,7 @@
 #include "PskFactory.h"
 #include "PskxFactory.h"
 #include "PskReader.h"
+#include "PskFixtureUtils.h"
 #include "Animation/Skeleton.h"
 #include "AssetCompilingManager.h"
 #include "Materials/MaterialInterface.h"
@@ -116,7 +117,7 @@ bool FPskImportValidationTest::RunTest(const FString& Parameters)
     // ActorX PSKX shares the geometry chunks; derive a static test fixture from the supplied mesh.
     const FString StaticName = AssetName + TEXT("_Static");
     const FString StaticSource = FPaths::ProjectSavedDir() / TEXT("UE58Migration/") + StaticName + TEXT(".pskx");
-    TestTrue(TEXT("Create PSKX fixture"), IFileManager::Get().Copy(*StaticSource, *Source, true) == COPY_OK);
+    TestTrue(TEXT("Create static PSKX fixture without skeletal chunks"), PskFixtureUtils::WriteStatic(Source, StaticSource));
     UPskxFactory* StaticFactory = NewObject<UPskxFactory>();
     UPackage* StaticPackage = CreatePackage(*(TEXT("/Game/PSKValidation/") + StaticName));
     UStaticMesh* StaticMesh = Cast<UStaticMesh>(StaticFactory->ImportObject(UStaticMesh::StaticClass(), StaticPackage,

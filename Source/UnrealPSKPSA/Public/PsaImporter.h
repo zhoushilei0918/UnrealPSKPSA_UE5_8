@@ -8,6 +8,7 @@ class FPsaReader;
 struct FPsaImportOptions
 {
     bool bFModel = true;
+    bool bAutoDetectSource = true;
     bool bReplaceExisting = false;
     bool bRepairInvalidKeys = false;
     bool bSaveAssets = true;

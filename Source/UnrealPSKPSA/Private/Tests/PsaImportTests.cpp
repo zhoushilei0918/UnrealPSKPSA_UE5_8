@@ -73,6 +73,7 @@ bool FPsaDirectoryImportTest::RunTest(const FString& Parameters)
         }
         TArray<FPsaBoneMapping> Mapping;
         FString Error, Summary;
+        TestFalse(TEXT("girl023 keeps FModel source and strict hierarchy validation"), Reader.bHasUEViewerBoneMetadata);
         if (Reader.Bones.Num() == 176)
         {
             TestFalse(TEXT("Reject known incompatible hierarchy"), FPsaImporter::MatchBones(Reader, Mesh, Mapping, Error));
@@ -162,7 +163,7 @@ bool FPsaReloadTest::RunTest(const FString& Parameters)
         const FString Path = FString::Printf(TEXT("/Game/PSAValidation/Animations/%s.%s"), Name, Name);
         UAnimSequence* Sequence = LoadObject<UAnimSequence>(nullptr, *Path);
         if (!TestNotNull(TEXT("Reload animation"), Sequence)) continue;
-        FAssetCompilingManager::Get().FinishCompilationForObjects({Sequence});
+        Sequence->WaitOnExistingCompression();
         TestEqual(TEXT("Skeleton reference survives save"), Sequence->GetSkeleton(), Mesh->GetSkeleton());
         TArray<FName> Names; Sequence->GetDataModel()->GetBoneTrackNames(Names);
         TestEqual(TEXT("Track count survives save"), Names.Num(), 235);
@@ -187,14 +188,14 @@ bool FPsaSavedPlaybackTest::RunTest(const FString& Parameters)
         const FString Name = FPaths::GetBaseFilename(File);
         UAnimSequence* Sequence = LoadObject<UAnimSequence>(nullptr, *(TEXT("/Game/PSAValidation/Animations/") + Name + TEXT(".") + Name));
         if (!TestNotNull(*Name, Sequence)) continue;
-        FAssetCompilingManager::Get().FinishCompilationForObjects({Sequence});
+        Sequence->WaitOnExistingCompression();
         if (FParse::Param(FCommandLine::Get(), TEXT("PsaRefreshCompression")))
         {
             Sequence->BoneCompressionSettings = LoadObject<UAnimBoneCompressionSettings>(nullptr,
                 TEXT("/Engine/Animation/DefaultRecorderBoneCompression.DefaultRecorderBoneCompression"));
             FPropertyChangedEvent Change(FindFProperty<FProperty>(UAnimSequence::StaticClass(), GET_MEMBER_NAME_CHECKED(UAnimSequence, BoneCompressionSettings)));
             Sequence->PostEditChangeProperty(Change);
-            FAssetCompilingManager::Get().FinishCompilationForObjects({Sequence});
+            Sequence->WaitOnExistingCompression();
             TestTrue(TEXT("Save updated playback compression"), SavePsaTestAsset(Sequence));
         }
         const IAnimationDataModel* Model = Sequence->GetDataModel();

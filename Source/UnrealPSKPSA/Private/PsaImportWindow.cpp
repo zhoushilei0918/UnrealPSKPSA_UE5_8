@@ -168,6 +168,7 @@ namespace
         FReply Import()
         {
             FPsaImportOptions Options;
+            Options.bAutoDetectSource = Settings->Source == EPsaSource::Auto;
             Options.bFModel = Settings->Source == EPsaSource::FModel;
             Options.bReplaceExisting = Settings->bReplaceExisting;
             Options.bRepairInvalidKeys = Settings->bRepairInvalidKeys;

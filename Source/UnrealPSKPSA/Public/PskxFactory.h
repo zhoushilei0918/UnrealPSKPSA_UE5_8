@@ -19,7 +19,7 @@ public:
 
 		Formats.Add(FactoryExtension + ";" + FactoryDescription);
 
-		SupportedClass = FactoryClass;
+        SupportedClass = UStaticMesh::StaticClass();
 	}
 	
 	static UObject* Import(const FString& Filename, UObject* Parent, const FName Name, const EObjectFlags Flags, TMap<FString, FString>
@@ -28,16 +28,11 @@ public:
     UPROPERTY(EditAnywhere, Category="Import")
     FActorXOrientation Orientation;
 
-protected:
-	UClass* FactoryClass = UStaticMesh::StaticClass();
-	FString FactoryExtension = "pskx";
-	FString FactoryDescription = "Unreal Static Mesh";
+    virtual bool FactoryCanImport(const FString& Filename) override;
 
-	virtual bool FactoryCanImport(const FString& Filename) override
-	{
-		const auto Extension = FPaths::GetExtension(Filename);
-		return Extension.Equals(FactoryExtension, ESearchCase::IgnoreCase);
-	}
+protected:
+	FString FactoryExtension = "pskx";
+	FString FactoryDescription = "ActorX Static or Skeletal Mesh (Auto Detect)";
 	
 	virtual UObject* FactoryCreateFile(UClass* InClass, UObject* InParent, FName InName, EObjectFlags Flags, const FString& Filename, const TCHAR* Params, FFeedbackContext* Warn, bool& bOutOperationCanceled) override;
 };

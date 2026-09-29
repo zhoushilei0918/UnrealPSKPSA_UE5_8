@@ -184,6 +184,17 @@ FPsaReader::FPsaReader(const FString& Filename, bool bRepairInvalidKeys)
         Ar.Seek(End);
     }
     if (Bones.IsEmpty() || Sequences.IsEmpty() || Keys.IsEmpty()) { Error = TEXT("PSA 缺少骨骼、动画信息或关键帧。"); return; }
+    // UEViewer ExportPsk.cpp::DoExportPsa writes this exact metadata pattern.
+    // Do not generalize to arbitrary parent conflicts: real hierarchies still need
+    // strict validation, including the FModel files used by existing imports.
+    bHasUEViewerBoneMetadata = Bones.Num() > 1 && Bones[0].ParentIndex == -1;
+    for (int32 Index = 0; Index < Bones.Num() && bHasUEViewerBoneMetadata; ++Index)
+    {
+        const auto& Bone = Bones[Index];
+        bHasUEViewerBoneMetadata = Bone.Flags == 0 && Bone.NumChildren == 0 &&
+            Bone.ParentIndex == (Index == 0 ? -1 : 0) && Bone.BonePos.Length == 1.0f &&
+            Bone.BonePos.XSize == 0 && Bone.BonePos.YSize == 0 && Bone.BonePos.ZSize == 0;
+    }
     TSet<FName> BoneNames;
     for (int32 Index = 0; Index < Bones.Num(); ++Index)
     {

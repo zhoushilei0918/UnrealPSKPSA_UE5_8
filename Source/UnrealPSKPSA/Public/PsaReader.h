@@ -31,6 +31,8 @@ public:
     explicit FPsaReader(const FString& Filename, bool bRepairInvalidKeys = false);
     bool bIsValid = false;
     FString Error;
+    // UEViewer writes placeholder parents/child counts, not an actual hierarchy.
+    bool bHasUEViewerBoneMetadata = false;
     int32 InterpolatedKeyCount = 0;
     int32 CopiedKeyCount = 0;
     TArray<VNamedBoneBinary> Bones;

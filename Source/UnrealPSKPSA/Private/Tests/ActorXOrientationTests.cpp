@@ -4,6 +4,7 @@
 #include "PskFactory.h"
 #include "PskxFactory.h"
 #include "PskReader.h"
+#include "PskFixtureUtils.h"
 #include "PsaImporter.h"
 #include "Animation/AnimSequence.h"
 #include "Animation/Skeleton.h"
@@ -79,6 +80,8 @@ bool FActorXOrientationTest::RunTest(const FString& Parameters)
     const FString Fixture = FPaths::ProjectSavedDir() / TEXT("PSAImport/orientation.psk");
     IFileManager::Get().MakeDirectory(*FPaths::GetPath(Fixture), true);
     if (!TestTrue(TEXT("Write fixture"), FFileHelper::SaveArrayToFile(Bytes, *Fixture))) return false;
+    const FString StaticFixture = FPaths::ChangeExtension(Fixture, TEXT("pskx"));
+    if (!TestTrue(TEXT("Write static accessory fixture"), PskFixtureUtils::WriteStatic(Fixture, StaticFixture))) return false;
 
     auto ImportMesh = [&](const FString& Name, const FActorXOrientation& Orientation)
     {
@@ -160,7 +163,7 @@ bool FActorXOrientationTest::RunTest(const FString& Parameters)
         }
         // PSKX body accessories use exactly the same basis.
         const FString StaticName = FString::Printf(TEXT("Static%d"), Axis);
-        UStaticMesh* Static = Cast<UStaticMesh>(UPskxFactory::Import(Fixture, CreatePackage(*(FString(Root) / StaticName)), FName(*StaticName), RF_Public | RF_Standalone, {}, Orientation));
+        UStaticMesh* Static = Cast<UStaticMesh>(UPskxFactory::Import(StaticFixture, CreatePackage(*(FString(Root) / StaticName)), FName(*StaticName), RF_Public | RF_Standalone, {}, Orientation));
         if (!TestNotNull(TEXT("Static accessory"), Static)) return false;
         const auto StaticPositions = FStaticMeshConstAttributes(*Static->GetMeshDescription(0)).GetVertexPositions();
         // Static mesh construction may reorder/weld vertices; compare geometry, not IDs.
@@ -191,7 +194,7 @@ bool FActorXOrientationReloadTest::RunTest(const FString& Parameters)
         const FString Folder = FString(Root) / Name / TEXT("Animations");
         UAnimSequence* Animation = LoadObject<UAnimSequence>(nullptr, *(Folder / TEXT("girl023_wp03a_base_run_loop.girl023_wp03a_base_run_loop")));
         if (!TestNotNull(TEXT("Reload oriented animation"), Animation)) return false;
-        FAssetCompilingManager::Get().FinishCompilationForObjects({Animation});
+        Animation->WaitOnExistingCompression();
         TestEqual(TEXT("Skeleton link preserved"), Animation->GetSkeleton(), Mesh->GetSkeleton());
         // Import again after reload to prove PSA obtains its rotation from the persisted mesh.
         FPsaImportOptions Options; Options.bReplaceExisting = true; Options.bSaveAssets = false;
