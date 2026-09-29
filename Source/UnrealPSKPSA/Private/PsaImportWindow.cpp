@@ -1,6 +1,7 @@
 #include "PsaImportWindow.h"
 #include "PsaImportSettings.h"
 #include "PsaImporter.h"
+#include "PsaImportLog.h"
 #include "ActorXImportSettings.h"
 #include "Animation/AnimSequence.h"
 #include "Engine/SkeletalMesh.h"
@@ -20,6 +21,7 @@
 #include "Widgets/Layout/SBox.h"
 #include "Widgets/Layout/SBorder.h"
 #include "Widgets/Input/SButton.h"
+#include "Widgets/Input/SCheckBox.h"
 #include "Widgets/Input/SMultiLineEditableTextBox.h"
 #include "Widgets/Text/STextBlock.h"
 
@@ -86,8 +88,19 @@ namespace
                             return FReply::Handled();
                         })]
                     ]
+                    + SVerticalBox::Slot().AutoHeight().Padding(0,0,0,6)
+                    [SAssignNew(ResultSummary, STextBlock).AutoWrapText(true).Text(FText::FromString(TEXT("PSA 不包含 UE 通知、曲线和完整增量动画设置，动画按采样姿态导入。")))]
+                    + SVerticalBox::Slot().AutoHeight().Padding(0,0,0,6)
+                    [
+                        SNew(SHorizontalBox)
+                        + SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center).Padding(0,0,12,0)
+                        [SNew(STextBlock).Text(FText::FromString(TEXT("显示日志：")))]
+                        + SHorizontalBox::Slot().AutoWidth().Padding(0,0,16,0)[MakeLogFilter(EPsaImportLogLevel::Error)]
+                        + SHorizontalBox::Slot().AutoWidth().Padding(0,0,16,0)[MakeLogFilter(EPsaImportLogLevel::Warning)]
+                        + SHorizontalBox::Slot().AutoWidth()[MakeLogFilter(EPsaImportLogLevel::Success)]
+                    ]
                     + SVerticalBox::Slot().FillHeight(0.65f)
-                    [SAssignNew(Results, SMultiLineEditableTextBox).IsReadOnly(true).AutoWrapText(true).Text(FText::FromString(TEXT("同名骨骼自动匹配；缺失轨道保持参考姿态；层级不兼容会报错。\nPSA 不包含 UE 通知、曲线和完整增量动画设置，动画按采样姿态导入。")))]
+                    [SAssignNew(Results, SMultiLineEditableTextBox).IsReadOnly(true).AutoWrapText(true).Text(FText::FromString(ImportLog.DisplayText()))]
                 ]
             ];
         }
@@ -96,8 +109,26 @@ namespace
         TArray<FString> Files;
         TArray<TWeakObjectPtr<UAnimSequence>> LastImported;
         TSharedPtr<SMultiLineEditableTextBox> FileList, Results;
-        TSharedPtr<STextBlock> FileCount;
+        TSharedPtr<STextBlock> FileCount, ResultSummary;
+        FPsaImportLog ImportLog;
         FString LastDirectory;
+        TSharedRef<SWidget> MakeLogFilter(EPsaImportLogLevel Level)
+        {
+            const FLinearColor Color = Level == EPsaImportLogLevel::Error ? FLinearColor(1.0f, 0.3f, 0.3f) :
+                Level == EPsaImportLogLevel::Warning ? FLinearColor(1.0f, 0.7f, 0.15f) : FLinearColor(0.3f, 0.85f, 0.4f);
+            return SNew(SCheckBox)
+                .ToolTipText(FText::FromString(TEXT("勾选以显示该级别日志；取消勾选仅隐藏日志。括号内为本次导入的日志条数。")))
+                .IsChecked_Lambda([this, Level] { return ImportLog.IsVisible(Level) ? ECheckBoxState::Checked : ECheckBoxState::Unchecked; })
+                .OnCheckStateChanged_Lambda([this, Level](ECheckBoxState State)
+                {
+                    ImportLog.SetVisible(Level, State == ECheckBoxState::Checked);
+                    Results->SetText(FText::FromString(ImportLog.DisplayText()));
+                })
+                [SNew(STextBlock).ColorAndOpacity(Color).Text_Lambda([this, Level]
+                {
+                    return FText::FromString(FString::Printf(TEXT("%s（%d）"), FPsaImportLog::Label(Level), ImportLog.Count(Level)));
+                })];
+        }
         void RefreshFiles()
         {
             Files.Sort();
@@ -142,7 +173,7 @@ namespace
             Options.bRepairInvalidKeys = Settings->bRepairInvalidKeys;
             Options.TranslationScale = Settings->TranslationScale;
             LastImported.Reset();
-            TArray<FString> Messages;
+            ImportLog.Reset();
             int32 Succeeded = 0, Failed = 0;
             bool bCanceled = false;
             FScopedSlowTask Progress(Files.Num(), FText::FromString(TEXT("正在导入 PSA 动画")));
@@ -152,15 +183,28 @@ namespace
                 if (Progress.ShouldCancel()) { bCanceled = true; break; }
                 Progress.EnterProgressFrame(1, FText::FromString(FPaths::GetCleanFilename(File)));
                 TArray<UAnimSequence*> Imported;
+                TArray<FString> Warnings;
                 FString Summary, Error;
-                if (FPsaImporter::ImportFile(File, Settings->TargetMesh, Settings->Destination, Options, Imported, Summary, Error))
-                { ++Succeeded; Messages.Add(TEXT("成功：") + Summary); }
-                else { ++Failed; Messages.Add(TEXT("失败：") + FPaths::GetCleanFilename(File) + TEXT("\n") + Error); }
+                const bool bImported = FPsaImporter::ImportFile(File, Settings->TargetMesh, Settings->Destination, Options, Imported, Summary, Error, &Warnings);
+                for (const FString& Warning : Warnings)
+                    ImportLog.Add(EPsaImportLogLevel::Warning, FPaths::GetCleanFilename(File) + TEXT("\n") + Warning);
+                if (bImported)
+                { ++Succeeded; ImportLog.Add(EPsaImportLogLevel::Success, Summary); }
+                else
+                {
+                    ++Failed;
+                    ImportLog.Add(EPsaImportLogLevel::Error, FPaths::GetCleanFilename(File) + TEXT("\n") + Error);
+                    if (!Imported.IsEmpty())
+                        ImportLog.Add(EPsaImportLogLevel::Warning, FString::Printf(TEXT("%s：本文件未完整导入，已生成 %d 个动画，请检查导入结果及保存状态。"), *FPaths::GetCleanFilename(File), Imported.Num()));
+                }
                 for (auto* Asset : Imported) LastImported.Add(Asset);
             }
-            const FString Heading = FString::Printf(TEXT("%s成功 %d 个文件，失败 %d 个文件，生成 %d 个动画。\n保存路径：%s\n\n"),
+            if (bCanceled)
+                ImportLog.Add(EPsaImportLogLevel::Warning, FString::Printf(TEXT("已取消导入，剩余 %d 个文件未处理。"), Files.Num() - Succeeded - Failed));
+            const FString Heading = FString::Printf(TEXT("%s成功 %d 个文件，失败 %d 个文件，生成 %d 个动画。\n保存路径：%s"),
                 bCanceled ? TEXT("已取消剩余文件。") : TEXT("导入完成。"), Succeeded, Failed, LastImported.Num(), *Settings->Destination);
-            Results->SetText(FText::FromString(Heading + FString::Join(Messages, TEXT("\n\n"))));
+            ResultSummary->SetText(FText::FromString(Heading));
+            Results->SetText(FText::FromString(ImportLog.DisplayText()));
             return FReply::Handled();
         }
     };

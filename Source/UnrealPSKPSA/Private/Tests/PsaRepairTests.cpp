@@ -158,11 +158,15 @@ bool FPsaRepairSamplesTest::RunTest(const FString& Parameters)
         TestTrue(TEXT("Repair count records damaged poses"), Fixed.InterpolatedKeyCount + Fixed.CopiedKeyCount > 0);
         FPsaImportOptions Options; Options.bReplaceExisting = true;
         TArray<UAnimSequence*> Assets; FString Summary, Error;
-        TestFalse(TEXT("Importer defaults still reject corrupt source"), FPsaImporter::ImportFile(Path, Mesh, TEXT("/Game/PSARepairValidation"), Options, Assets, Summary, Error));
+        TArray<FString> Warnings { TEXT("Previous file warning") };
+        TestFalse(TEXT("Importer defaults still reject corrupt source"), FPsaImporter::ImportFile(Path, Mesh, TEXT("/Game/PSARepairValidation"), Options, Assets, Summary, Error, &Warnings));
+        TestTrue(TEXT("Failed import reports error without stale warnings or success"), !Error.IsEmpty() && Summary.IsEmpty() && Warnings.IsEmpty());
         Options.bRepairInvalidKeys = true;
-        const bool bImported = FPsaImporter::ImportFile(Path, Mesh, TEXT("/Game/PSARepairValidation"), Options, Assets, Summary, Error);
+        const bool bImported = FPsaImporter::ImportFile(Path, Mesh, TEXT("/Game/PSARepairValidation"), Options, Assets, Summary, Error, &Warnings);
         if (!TestTrue(*(Path + TEXT(": ") + Error), bImported) || !TestEqual(TEXT("One repaired sequence"), Assets.Num(), 1)) continue;
-        TestTrue(TEXT("User sees repair summary"), Summary.Contains(TEXT("已修复")));
+        const FString WarningText = FString::Join(Warnings, TEXT("\n"));
+        TestTrue(TEXT("Repair and bone mapping issues are warnings"), WarningText.Contains(TEXT("已修复")) && WarningText.Contains(TEXT("忽略")) && WarningText.Contains(TEXT("参考姿态")));
+        TestTrue(TEXT("Success is separate from repair warning"), !Summary.IsEmpty() && !Summary.Contains(TEXT("已修复")) && Error.IsEmpty());
         const auto& Info = Fixed.Sequences[0];
         UAnimSequence* Sequence = Assets[0];
         TestEqual(TEXT("Repair preserves frame count"), Sequence->GetDataModel()->GetNumberOfKeys(), Info.NumRawFrames);
@@ -184,7 +188,7 @@ bool FPsaRepairSamplesTest::RunTest(const FString& Parameters)
         TestTrue(TEXT("All repaired compressed playback poses valid"), bPlaybackOK);
         FFileHelper::LoadFileToArray(After, *Path);
         TestTrue(TEXT("Source PSA never modified"), Before == After);
-        Audit.Add(Summary); AddInfo(Summary);
+        Audit.Add(Summary + TEXT("\n") + WarningText); AddInfo(Summary + TEXT("\n") + WarningText);
     }
     FFileHelper::SaveStringToFile(FString::Join(Audit, TEXT("\n\n")), *(FPaths::ProjectSavedDir() / TEXT("PSAImport/RepairAudit.txt")));
     return true;

@@ -51,9 +51,10 @@ bool FPsaImporter::MatchBones(const FPsaReader& Reader, const USkeletalMesh* Mes
 }
 
 bool FPsaImporter::ImportFile(const FString& Filename, USkeletalMesh* Mesh, const FString& Destination,
-    const FPsaImportOptions& Options, TArray<UAnimSequence*>& Imported, FString& Summary, FString& Error)
+    const FPsaImportOptions& Options, TArray<UAnimSequence*>& Imported, FString& Summary, FString& Error, TArray<FString>* OutWarnings)
 {
     Error.Reset(); Summary.Reset();
+    if (OutWarnings) OutWarnings->Reset();
     const FPsaReader Reader(Filename, Options.bRepairInvalidKeys);
     TArray<FPsaBoneMapping> Mapping;
     if (!MatchBones(Reader, Mesh, Mapping, Error)) return false;
@@ -70,6 +71,15 @@ bool FPsaImporter::ImportFile(const FString& Filename, USkeletalMesh* Mesh, cons
     int32 CreatedCount = 0;
     const FActorXOrientation Orientation = GetActorXMeshOrientation(Mesh);
     const FQuat4f BasisRotation = Orientation.Rotation();
+    TArray<FString> Warnings;
+    if (Reader.Bones.Num() > Mapping.Num())
+        Warnings.Add(FString::Printf(TEXT("忽略 %d 根目标网格中不存在的源骨骼。"), Reader.Bones.Num() - Mapping.Num()));
+    if (Ref.GetRawBoneNum() > Mapping.Num())
+        Warnings.Add(FString::Printf(TEXT("%d 根目标骨骼缺失动画轨道，保持参考姿态。"), Ref.GetRawBoneNum() - Mapping.Num()));
+    if (Reader.InterpolatedKeyCount + Reader.CopiedKeyCount > 0)
+        Warnings.Add(FString::Printf(TEXT("已修复 %d 个骨骼关键帧（中间插值 %d，首尾复制 %d）；补帧为估算姿态。"),
+            Reader.InterpolatedKeyCount + Reader.CopiedKeyCount, Reader.InterpolatedKeyCount, Reader.CopiedKeyCount));
+    if (OutWarnings) *OutWarnings = Warnings;
     for (const FPsaSequenceInfo& Info : Reader.Sequences)
     {
         FString AssetName = ObjectTools::SanitizeObjectName(Info.Name);
@@ -181,11 +191,10 @@ bool FPsaImporter::ImportFile(const FString& Filename, USkeletalMesh* Mesh, cons
             { Error = TEXT("动画已生成，但保存失败，请检查输出目录后手动保存：") + PackageName; return false; }
         }
     }
-    Summary = FString::Printf(TEXT("%s：%d 个动画；匹配 %d/%d 根目标骨骼，忽略 %d 根额外源骨骼，%d 根缺失轨道保持参考姿态。"),
-        *FPaths::GetCleanFilename(Filename), CreatedCount, Mapping.Num(), Ref.GetRawBoneNum(), Reader.Bones.Num() - Mapping.Num(), Ref.GetRawBoneNum() - Mapping.Num());
+    Summary = FString::Printf(TEXT("%s：%d 个动画；匹配 %d/%d 根目标骨骼。"),
+        *FPaths::GetCleanFilename(Filename), CreatedCount, Mapping.Num(), Ref.GetRawBoneNum());
     Summary += TEXT("朝向：") + Orientation.Description() + TEXT("。");
-    if (Reader.InterpolatedKeyCount + Reader.CopiedKeyCount > 0)
-        Summary += FString::Printf(TEXT("已修复 %d 个骨骼关键帧（中间插值 %d，首尾复制 %d）；补帧为估算姿态。"),
-            Reader.InterpolatedKeyCount + Reader.CopiedKeyCount, Reader.InterpolatedKeyCount, Reader.CopiedKeyCount);
+    // Keep warnings in the legacy summary for callers that do not request separate diagnostics.
+    if (!OutWarnings && !Warnings.IsEmpty()) Summary += FString::Join(Warnings, TEXT(""));
     return true;
 }
