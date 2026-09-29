@@ -17,4 +17,5 @@ public:
 
 private:
 	void RegisterMenus();
+	TSharedPtr<class FSlateStyleSet> Style;
 };

@@ -28,9 +28,11 @@ struct FPsaScaleKey
 class UNREALPSKPSA_API FPsaReader
 {
 public:
-    explicit FPsaReader(const FString& Filename);
+    explicit FPsaReader(const FString& Filename, bool bRepairInvalidKeys = false);
     bool bIsValid = false;
     FString Error;
+    int32 InterpolatedKeyCount = 0;
+    int32 CopiedKeyCount = 0;
     TArray<VNamedBoneBinary> Bones;
     TArray<FPsaSequenceInfo> Sequences;
     TArray<FPsaKey> Keys;

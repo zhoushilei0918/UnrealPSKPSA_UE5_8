@@ -11,14 +11,86 @@ namespace
         Ar.Serialize(Buffer, Length);
         return UTF8_TO_TCHAR(Buffer);
     }
+
+    bool RepairPoseKeys(FPsaReader& Reader, const TBitArray<>& Invalid)
+    {
+        // Always find anchors in the original data, never in already repaired keys.
+        const auto OriginalKeys = Reader.Keys;
+        const auto OriginalScales = Reader.ScaleKeys;
+        TBitArray<> Repaired(false, Reader.Keys.Num());
+        for (const auto& Sequence : Reader.Sequences)
+        {
+            for (int32 Bone = 0; Bone < Sequence.TotalBones; ++Bone)
+            {
+                auto Index = [&](int32 Frame) { return int32((int64(Sequence.FirstRawFrame) + Frame) * Sequence.TotalBones + Bone); };
+                int32 Frame = 0, Previous = INDEX_NONE;
+                while (Frame < Sequence.NumRawFrames)
+                {
+                    if (!Invalid[Index(Frame)]) { Previous = Frame++; continue; }
+                    const int32 Start = Frame;
+                    while (Frame < Sequence.NumRawFrames && Invalid[Index(Frame)]) ++Frame;
+                    const int32 Next = Frame < Sequence.NumRawFrames ? Frame : INDEX_NONE;
+                    if (Previous == INDEX_NONE && Next == INDEX_NONE)
+                    {
+                        Reader.Error = FString::Printf(TEXT("动画 %s 的骨骼 %s 全部帧无效，没有可用于补帧的有效帧。"),
+                            *Sequence.Name, UTF8_TO_TCHAR(Reader.Bones[Bone].Name));
+                        return false;
+                    }
+                    const bool bInterpolate = Previous != INDEX_NONE && Next != INDEX_NONE;
+                    const int32 Left = Index(Previous == INDEX_NONE ? Next : Previous);
+                    const int32 Right = Index(Next == INDEX_NONE ? Previous : Next);
+                    for (int32 Missing = Start; Missing < Frame; ++Missing)
+                    {
+                        const int32 KeyIndex = Index(Missing);
+                        const float Alpha = bInterpolate ? float(Missing - Previous) / float(Next - Previous) : 0.0f;
+                        FPsaKey Key = OriginalKeys[KeyIndex];
+                        Key.Position = FMath::Lerp(OriginalKeys[Left].Position, OriginalKeys[Right].Position, Alpha);
+                        Key.Rotation = FQuat4f::Slerp(OriginalKeys[Left].Rotation, OriginalKeys[Right].Rotation, Alpha).GetNormalized();
+                        const FVector3f Scale = OriginalScales.IsEmpty() ? FVector3f::OneVector :
+                            FMath::Lerp(OriginalScales[Left].Scale, OriginalScales[Right].Scale, Alpha);
+                        if (Key.Position.ContainsNaN() || Key.Rotation.ContainsNaN() || Scale.ContainsNaN())
+                        {
+                            Reader.Error = TEXT("有效帧数值超出补帧计算范围，请重新导出动画。");
+                            return false;
+                        }
+                        // Overlapping sequence ranges must not silently overwrite one another
+                        // with different repairs determined by different animation boundaries.
+                        if (Repaired[KeyIndex] && (!Reader.Keys[KeyIndex].Position.Equals(Key.Position, 0.00001f) ||
+                            !Reader.Keys[KeyIndex].Rotation.Equals(Key.Rotation, 0.00001f) ||
+                            (!Reader.ScaleKeys.IsEmpty() && !Reader.ScaleKeys[KeyIndex].Scale.Equals(Scale, 0.00001f))))
+                        {
+                            Reader.Error = TEXT("动画帧区间重叠，补帧结果存在冲突，请分别导出动画后再导入。");
+                            return false;
+                        }
+                        Reader.Keys[KeyIndex] = Key;
+                        if (!Reader.ScaleKeys.IsEmpty()) Reader.ScaleKeys[KeyIndex].Scale = Scale;
+                        if (!Repaired[KeyIndex])
+                        {
+                            if (bInterpolate) ++Reader.InterpolatedKeyCount;
+                            else ++Reader.CopiedKeyCount;
+                            Repaired[KeyIndex] = true;
+                        }
+                    }
+                }
+            }
+        }
+        for (int32 Key = 0; Key < Invalid.Num(); ++Key)
+            if (Invalid[Key] && !Repaired[Key])
+            {
+                Reader.Error = TEXT("无效关键帧位于动画范围之外，无法确定补帧依据。");
+                return false;
+            }
+        return true;
+    }
 }
 
-FPsaReader::FPsaReader(const FString& Filename)
+FPsaReader::FPsaReader(const FString& Filename, bool bRepairInvalidKeys)
 {
     TArray<uint8> Bytes;
     if (!FFileHelper::LoadFileToArray(Bytes, *Filename)) { Error = TEXT("无法读取 PSA 文件。"); return; }
     FMemoryReader Ar(Bytes);
     TSet<FString> Seen;
+    TArray<int32> InvalidPoseKeys, InvalidScaleKeys;
     while (Ar.Tell() < Ar.TotalSize())
     {
         if (Ar.TotalSize() - Ar.Tell() < 32) { Error = TEXT("PSA 数据块头被截断。"); return; }
@@ -76,9 +148,18 @@ FPsaReader::FPsaReader(const FString& Filename)
                 Ar.Serialize(&Key.Position, 12);
                 Ar.Serialize(&Key.Rotation, 16);
                 Ar << Key.Time;
-                if (Key.Position.ContainsNaN() || Key.Rotation.ContainsNaN() || Key.Rotation.SizeSquared() < SMALL_NUMBER || !FMath::IsFinite(Key.Time) || Key.Time < 0)
-                { Error = FString::Printf(TEXT("第 %d 个动画关键帧包含无效的位置、零旋转四元数或时间。源 PSA 数据无法还原为有效姿态，请重新导出。"), KeyIndex); return; }
-                Key.Rotation.Normalize();
+                if (!FMath::IsFinite(Key.Time) || Key.Time < 0)
+                { Error = FString::Printf(TEXT("第 %d 个动画关键帧时间无效，请重新导出。"), KeyIndex); return; }
+                const float RotationLength = Key.Rotation.SizeSquared();
+                const bool bInvalidPose = Key.Position.ContainsNaN() || Key.Rotation.ContainsNaN() ||
+                    !FMath::IsFinite(RotationLength) || RotationLength < SMALL_NUMBER;
+                if (bInvalidPose)
+                {
+                    if (!bRepairInvalidKeys)
+                    { Error = FString::Printf(TEXT("第 %d 个动画关键帧包含无效的位置或旋转（如零四元数）。可勾选“修复无效关键帧”尝试补帧，或重新导出。"), KeyIndex); return; }
+                    InvalidPoseKeys.Add(KeyIndex);
+                }
+                else Key.Rotation.Normalize();
                 ++KeyIndex;
             }
         }
@@ -86,11 +167,18 @@ FPsaReader::FPsaReader(const FString& Filename)
         {
             if (!RequireSize(16)) return;
             ScaleKeys.SetNum(Count);
+            int32 KeyIndex = 0;
             for (auto& Key : ScaleKeys)
             {
                 Ar.Serialize(&Key.Scale, 12); Ar << Key.Time;
-                if (Key.Scale.ContainsNaN() || !FMath::IsFinite(Key.Time) || Key.Time < 0)
-                { Error = TEXT("动画包含无效的缩放或时间。"); return; }
+                if (!FMath::IsFinite(Key.Time) || Key.Time < 0)
+                { Error = TEXT("动画包含无效的缩放关键帧时间，请重新导出。"); return; }
+                if (Key.Scale.ContainsNaN())
+                {
+                    if (!bRepairInvalidKeys) { Error = TEXT("动画包含无效的缩放。可勾选“修复无效关键帧”尝试补帧，或重新导出。"); return; }
+                    InvalidScaleKeys.Add(KeyIndex);
+                }
+                ++KeyIndex;
             }
         }
         Ar.Seek(End);
@@ -115,5 +203,12 @@ FPsaReader::FPsaReader(const FString& Filename)
         { Error = TEXT("PSA 动画骨骼数量、帧范围或帧率无效。"); return; }
     }
     if (!ScaleKeys.IsEmpty() && ScaleKeys.Num() != Keys.Num()) { Error = TEXT("PSA 缩放帧数量与动画帧数量不一致。"); return; }
+    if (!InvalidPoseKeys.IsEmpty() || !InvalidScaleKeys.IsEmpty())
+    {
+        TBitArray<> Invalid(false, Keys.Num());
+        for (int32 Index : InvalidPoseKeys) Invalid[Index] = true;
+        for (int32 Index : InvalidScaleKeys) Invalid[Index] = true;
+        if (!RepairPoseKeys(*this, Invalid)) return;
+    }
     bIsValid = true;
 }

@@ -11,7 +11,7 @@ public class UnrealPSKPSA : ModuleRules
             "AssetRegistry", "MeshDescription", "SkeletalMeshDescription", "StaticMeshDescription", "RawMesh", "RenderCore",
             "MeshBuilder", "MeshUtilitiesCommon", "TargetPlatform",
             "AnimationDataController", "AssetTools", "Slate", "SlateCore",
-            "ToolMenus", "ContentBrowser", "DesktopPlatform", "PropertyEditor", "Json"
+            "ToolMenus", "ContentBrowser", "DesktopPlatform", "PropertyEditor", "Json", "Projects"
         });
     }
 }

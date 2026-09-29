@@ -139,6 +139,7 @@ namespace
             FPsaImportOptions Options;
             Options.bFModel = Settings->Source == EPsaSource::FModel;
             Options.bReplaceExisting = Settings->bReplaceExisting;
+            Options.bRepairInvalidKeys = Settings->bRepairInvalidKeys;
             Options.TranslationScale = Settings->TranslationScale;
             LastImported.Reset();
             TArray<FString> Messages;

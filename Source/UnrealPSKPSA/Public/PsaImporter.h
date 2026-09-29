@@ -9,6 +9,7 @@ struct FPsaImportOptions
 {
     bool bFModel = true;
     bool bReplaceExisting = false;
+    bool bRepairInvalidKeys = false;
     bool bSaveAssets = true;
     float TranslationScale = 1.0f;
 };

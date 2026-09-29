@@ -54,7 +54,7 @@ bool FPsaImporter::ImportFile(const FString& Filename, USkeletalMesh* Mesh, cons
     const FPsaImportOptions& Options, TArray<UAnimSequence*>& Imported, FString& Summary, FString& Error)
 {
     Error.Reset(); Summary.Reset();
-    const FPsaReader Reader(Filename);
+    const FPsaReader Reader(Filename, Options.bRepairInvalidKeys);
     TArray<FPsaBoneMapping> Mapping;
     if (!MatchBones(Reader, Mesh, Mapping, Error)) return false;
     if (!FMath::IsFinite(Options.TranslationScale) || Options.TranslationScale <= 0)
@@ -184,5 +184,8 @@ bool FPsaImporter::ImportFile(const FString& Filename, USkeletalMesh* Mesh, cons
     Summary = FString::Printf(TEXT("%s：%d 个动画；匹配 %d/%d 根目标骨骼，忽略 %d 根额外源骨骼，%d 根缺失轨道保持参考姿态。"),
         *FPaths::GetCleanFilename(Filename), CreatedCount, Mapping.Num(), Ref.GetRawBoneNum(), Reader.Bones.Num() - Mapping.Num(), Ref.GetRawBoneNum() - Mapping.Num());
     Summary += TEXT("朝向：") + Orientation.Description() + TEXT("。");
+    if (Reader.InterpolatedKeyCount + Reader.CopiedKeyCount > 0)
+        Summary += FString::Printf(TEXT("已修复 %d 个骨骼关键帧（中间插值 %d，首尾复制 %d）；补帧为估算姿态。"),
+            Reader.InterpolatedKeyCount + Reader.CopiedKeyCount, Reader.InterpolatedKeyCount, Reader.CopiedKeyCount);
     return true;
 }
