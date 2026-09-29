@@ -20,19 +20,19 @@
 
   1. 找到一个空文件夹（它会直接导入到当前文件夹下），选择 "**Import-> 选择要导入的 `.psk` ** " ： 
 
-     <img src="assets/image-20260929111730517.png" alt="image-20260929111730517" style="zoom: 50%;" />
+     <img src="assets/image-20260929111730517.png" alt="image-20260929111730517" style="zoom: 25%;" />
 
      选择要导入的 `.psk` 或 `.pskx` 文件：
 
-     <img src="assets/image-20260929112145552.png" alt="image-20260929112145552" style="zoom: 50%;" />
+     <img src="assets/image-20260929112145552.png" alt="image-20260929112145552" style="zoom: 25%;" />
 
   2. 然后会出现一个弹窗，此时需要选择朝向。因为 **PSK** 的文件朝向可能与导入 **UE** 需要的朝向并不一致，此时可以进行设置，无需在导入到 **DCC** 软件进行调整（这个选择可能需要你进行一定的尝试才能知道 :D ）：
 
-     <img src="assets/image-20260929112529610.png" alt="image-20260929112529610" style="zoom:50%;" />
+     <img src="assets/image-20260929112529610.png" alt="image-20260929112529610" style="zoom: 25%;" />
 
   3. 这里是我导入的效果：
 
-     <img src="assets/image-20260929112905403.png" alt="image-20260929112905403" style="zoom: 33%;" />
+     <img src="assets/image-20260929112905403.png" alt="image-20260929112905403" style="zoom: 25%;" />
 
 > Tip：可以直接【**拖拽**】PSK 文件到 Content 目录下即可进行导入。
 
@@ -44,25 +44,25 @@
 
      ① 通过 "**Tool -> 导入 PSA 动画...**"：
 
-     <img src="assets/image-20260929113239156.png" alt="image-20260929113239156" style="zoom:50%;" />
+     <img src="assets/image-20260929113239156.png" alt="image-20260929113239156" style="zoom: 25%;" />
 
      ② 直接在工具栏上可以看到按钮：
 
-     <img src="assets/image-20260929113326719.png" alt="image-20260929113326719" style="zoom: 50%;" />
+     <img src="assets/image-20260929113326719.png" alt="image-20260929113326719" style="zoom: 33%;" />
 
      ③ 通过点击骨骼网格体，"**右键菜单 -> 导入 PSA 动画...**"：
 
-     <img src="assets/image-20260929113500420.png" alt="image-20260929113500420" style="zoom:50%;" />
+     <img src="assets/image-20260929113500420.png" alt="image-20260929113500420" style="zoom: 25%;" />
 
   2. 点击 "**导入 PSA 动画...**" 会打开一个弹窗，首先需要对模型进行指定，如果是右键的方式打开的，那么会自动进行选定：
 
-     <img src="assets/image-20260929113751416.png" alt="image-20260929113751416" style="zoom:50%;" />
+     <img src="assets/image-20260929113751416.png" alt="image-20260929113751416" style="zoom: 25%;" />
 
      - **保存路径**：就是导入的 `.psa` 文件的保存路径，以 "**/Game**" 即 **Conent**目录为开头；
 
      - **PSA 导出来源**：一般 **FModel** 就使用 **FModel / CUE4Parse**：
 
-       <img src="assets/image-20260929114141688.png" alt="image-20260929114141688" style="zoom:67%;" />
+       <img src="assets/image-20260929114141688.png" alt="image-20260929114141688" style="zoom: 33%;" />
 
      - **覆盖同名动画**：如果导出的文件夹出现于导出内容同名的文件，那么这里会设置是否覆盖；
 
