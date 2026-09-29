@@ -2,6 +2,7 @@
 #include "Misc/AutomationTest.h"
 #include "PsaReader.h"
 #include "PsaImporter.h"
+#include "LocalizationTestUtils.h"
 #include "PskxFactory.h"
 #include "PsaImportSettings.h"
 #include "Animation/AnimSequence.h"
@@ -140,7 +141,7 @@ bool FUEViewerImportTest::RunTest(const FString& Parameters)
         if (!TestTrue(*(Source + TEXT(": ") + Error), FPsaImporter::ImportFile(Source, Mesh, TEXT("/Game/PSACeliaValidation/Animations"), Options, Assets, Summary, Error, &Warnings))) { AddError(Error); continue; }
         if (!TestEqual(TEXT("One sample animation"), Assets.Num(), 1)) continue;
         TestTrue(TEXT("Detected source shown"), Summary.Contains(TEXT("UEViewer")));
-        TestTrue(TEXT("Missing hierarchy disclosed in warning log"), FString::Join(Warnings, TEXT(" ")).Contains(TEXT("占位层级")));
+        TestTrue(TEXT("Missing hierarchy disclosed in warning log"), Warnings.Contains(ActorXTestText(TEXT("UEViewerHierarchyWarning")).ToString()));
         CheckPlayback(*this, Mesh, Assets[0], Reader, Source);
     }
     AddInfo(FString::Printf(TEXT("Parsed %d PSA files; %d fully match Celia; imported and checked %d representative clips."), AllFiles.Num(), FullBodyFiles, SampleFiles().Num()));
@@ -178,7 +179,7 @@ bool FUEViewerMetadataTest::RunTest(const FString& Parameters)
     // Once metadata is known to represent actual parents, a conflict must still fail.
     Reader.bHasUEViewerBoneMetadata = false;
     TestFalse(TEXT("Real hierarchy conflict remains rejected"), FPsaImporter::MatchBones(Reader, Mesh, Mapping, Error));
-    TestTrue(TEXT("Mismatch explained"), Error.Contains(TEXT("骨骼层级不兼容")));
+    TestTrue(TEXT("Mismatch explained"), Error.Contains(ActorXTestText(TEXT("HierarchyMismatch")).ToString()));
     TArray<uint8> Bytes; FFileHelper::LoadFileToArray(Bytes, *Source);
     // The first two headers are ANIMHEAD and BONENAMES. Remove the distinctive length marker.
     const float Zero = 0;

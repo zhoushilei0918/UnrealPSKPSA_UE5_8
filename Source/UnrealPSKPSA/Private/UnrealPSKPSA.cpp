@@ -28,13 +28,13 @@ void FUnrealPSKPSAModule::RegisterMenus()
     FToolMenuOwnerScoped Owner(this);
     UToolMenu* Tools = UToolMenus::Get()->ExtendMenu("LevelEditor.MainMenu.Tools");
     Tools->FindOrAddSection("UnrealPSKPSA").AddMenuEntry("OpenPsaImporter",
-        FText::FromString(TEXT("导入 PSA 动画…")), FText::FromString(TEXT("选择骨骼网格并导入一个或多个 PSA 动画文件。")),
+        NSLOCTEXT("UnrealPSKPSA", "ImportMenu", "Import PSA Animation…"), NSLOCTEXT("UnrealPSKPSA", "ImportMenuTooltip", "Choose a skeletal mesh and import one or more PSA animation files."),
         FSlateIcon("UnrealPSKPSAStyle", "UnrealPSKPSA.OpenImporter"), FUIAction(FExecuteAction::CreateLambda([] { OpenPsaImportWindow(); })));
 
     UToolMenu* Toolbar = UToolMenus::Get()->ExtendMenu("LevelEditor.LevelEditorToolBar.User");
     Toolbar->FindOrAddSection("UnrealPSKPSA").AddEntry(FToolMenuEntry::InitToolBarButton(
         "OpenPsaImporterToolbar", FUIAction(FExecuteAction::CreateLambda([] { OpenPsaImportWindow(); })),
-        FText::FromString(TEXT("PSA 动画")), FText::FromString(TEXT("打开 PSA 动画导入面板，选择骨骼网格并导入动画。")),
+        NSLOCTEXT("UnrealPSKPSA", "ToolbarLabel", "PSA Animation"), NSLOCTEXT("UnrealPSKPSA", "ToolbarTooltip", "Open the PSA importer to select a skeletal mesh and import animations."),
         FSlateIcon("UnrealPSKPSAStyle", "UnrealPSKPSA.OpenImporter")));
 
     UToolMenu* MeshMenu = UToolMenus::Get()->ExtendMenu("ContentBrowser.AssetContextMenu.SkeletalMesh");
@@ -44,7 +44,7 @@ void FUnrealPSKPSAModule::RegisterMenus()
         if (!Context || Context->SelectedAssets.Num() != 1) return;
         const FAssetData MeshAsset = Context->SelectedAssets[0];
         Menu->FindOrAddSection("GetAssetActions").AddMenuEntry("ImportPsaForMesh",
-            FText::FromString(TEXT("导入 PSA 动画…")), FText::FromString(TEXT("使用此骨骼网格的 Skeleton 导入 PSA 动画。")),
+            NSLOCTEXT("UnrealPSKPSA", "ImportMenu", "Import PSA Animation…"), NSLOCTEXT("UnrealPSKPSA", "MeshMenuTooltip", "Import PSA animations using this skeletal mesh's Skeleton."),
             FSlateIcon("UnrealPSKPSAStyle", "UnrealPSKPSA.OpenImporter"), FUIAction(FExecuteAction::CreateLambda([MeshAsset]
             {
                 if (USkeletalMesh* Mesh = Cast<USkeletalMesh>(MeshAsset.GetAsset())) OpenPsaImportWindow(Mesh);

@@ -74,7 +74,7 @@ bool FPskReaderValidationTest::RunTest(const FString& Parameters)
     Bytes.SetNum(Bytes.Num() - 1);
     const FString TruncatedFile = FixtureDir / TEXT("truncated.psk");
     FFileHelper::SaveArrayToFile(Bytes, *TruncatedFile);
-    AddExpectedError(TEXT("Cannot import"), EAutomationExpectedErrorFlags::Contains, 1);
+    AddExpectedError(TEXT("truncated.psk"), EAutomationExpectedErrorFlags::Contains, 1);
     const FPskReader Truncated(TruncatedFile);
     TestFalse(TEXT("Truncated file is rejected"), Truncated.bIsValid);
     return true;

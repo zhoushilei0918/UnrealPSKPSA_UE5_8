@@ -22,10 +22,10 @@ bool FPsaImporter::MatchBones(const FPsaReader& Reader, const USkeletalMesh* Mes
     Mapping.Reset();
     Error.Reset();
     if (!Reader.bIsValid) { Error = Reader.Error; return false; }
-    if (!Mesh || !Mesh->GetSkeleton()) { Error = TEXT("请选择具有 Skeleton 的 Skeletal Mesh（骨骼网格体）。"); return false; }
+    if (!Mesh || !Mesh->GetSkeleton()) { Error = NSLOCTEXT("UnrealPSKPSA", "MissingTargetSkeleton", "Select a Skeletal Mesh that has a Skeleton.").ToString(); return false; }
     const FReferenceSkeleton& Ref = Mesh->GetRefSkeleton();
     if (Ref.GetRawBoneNum() == 0 || Ref.GetBoneName(0) != FName(UTF8_TO_TCHAR(Reader.Bones[0].Name)))
-    { Error = TEXT("目标网格与 PSA 的根骨骼名称不同，请选择对应的网格。"); return false; }
+    { Error = NSLOCTEXT("UnrealPSKPSA", "RootMismatch", "The target mesh and PSA root bone names differ. Select the matching mesh.").ToString(); return false; }
     TArray<FString> Conflicts;
     for (int32 SourceIndex = 0; SourceIndex < Reader.Bones.Num(); ++SourceIndex)
     {
@@ -37,16 +37,16 @@ bool FPsaImporter::MatchBones(const FPsaReader& Reader, const USkeletalMesh* Mes
         const int32 TargetParentIndex = Ref.GetParentIndex(TargetIndex);
         const FName TargetParent = TargetParentIndex == INDEX_NONE ? NAME_None : Ref.GetBoneName(TargetParentIndex);
         if (!Reader.bHasUEViewerBoneMetadata && SourceParent != TargetParent)
-            Conflicts.Add(FString::Printf(TEXT("%s（PSA 父骨骼：%s；目标：%s）"), *Name.ToString(), *SourceParent.ToString(), *TargetParent.ToString()));
+            Conflicts.Add(FText::Format(NSLOCTEXT("UnrealPSKPSA", "ParentMismatch", "{0} (PSA parent: {1}; target parent: {2})"), FText::FromString(Name.ToString()), FText::FromString(SourceParent.ToString()), FText::FromString(TargetParent.ToString())).ToString());
         Mapping.Add({SourceIndex, TargetIndex});
     }
     if (!Conflicts.IsEmpty())
     {
-        Error = TEXT("骨骼层级不兼容，需要对应的源网格或先进行动画重定向：\n") + FString::Join(Conflicts, TEXT("\n"));
+        Error = NSLOCTEXT("UnrealPSKPSA", "HierarchyMismatch", "Incompatible bone hierarchy. Use the matching source mesh or retarget the animation first:\n").ToString() + FString::Join(Conflicts, TEXT("\n"));
         Mapping.Reset();
         return false;
     }
-    if (Mapping.Num() < FMath::Min(2, Ref.GetRawBoneNum())) { Error = TEXT("没有足够的同名骨骼可匹配。"); return false; }
+    if (Mapping.Num() < FMath::Min(2, Ref.GetRawBoneNum())) { Error = NSLOCTEXT("UnrealPSKPSA", "InsufficientMatches", "Not enough bones with matching names were found.").ToString(); return false; }
     return true;
 }
 
@@ -60,13 +60,13 @@ bool FPsaImporter::ImportFile(const FString& Filename, USkeletalMesh* Mesh, cons
     TArray<FPsaBoneMapping> Mapping;
     if (!MatchBones(Reader, Mesh, Mapping, Error)) return false;
     if (!FMath::IsFinite(Options.TranslationScale) || Options.TranslationScale <= 0)
-    { Error = TEXT("位置缩放必须是大于零的有限数值。"); return false; }
+    { Error = NSLOCTEXT("UnrealPSKPSA", "InvalidTranslationScale", "Translation scale must be a finite number greater than zero.").ToString(); return false; }
     FString Folder = Destination;
     Folder.TrimStartAndEndInline();
     Folder.RemoveFromEnd(TEXT("/"));
     FText PathError;
     if (!(Folder == TEXT("/Game") || Folder.StartsWith(TEXT("/Game/"))) || !FPackageName::IsValidLongPackageName(Folder / TEXT("PSAAsset"), false, &PathError))
-    { Error = TEXT("保存路径必须是有效的内容路径，例如 /Game/Animations。"); return false; }
+    { Error = NSLOCTEXT("UnrealPSKPSA", "InvalidDestination", "Destination must be a valid content path, such as /Game/Animations.").ToString(); return false; }
 
     const FReferenceSkeleton& Ref = Mesh->GetRefSkeleton();
     int32 CreatedCount = 0;
@@ -74,16 +74,15 @@ bool FPsaImporter::ImportFile(const FString& Filename, USkeletalMesh* Mesh, cons
     const FQuat4f BasisRotation = Orientation.Rotation();
     TArray<FString> Warnings;
     if (Options.bUseReferenceScale)
-        Warnings.Add(TEXT("已使用模型参考缩放：忽略 PSA 的动画缩放（包括原有缩放效果），位置和旋转保持正常导入。"));
+        Warnings.Add(NSLOCTEXT("UnrealPSKPSA", "UseReferenceScaleWarning", "Using mesh reference scale: PSA animation scale effects are ignored; position and rotation are imported normally.").ToString());
     if (Reader.bHasUEViewerBoneMetadata)
-        Warnings.Add(TEXT("此 PSA 使用 UEViewer 占位层级，按骨骼名称匹配并沿用目标网格层级；请确保选择对应人物的模型。"));
+        Warnings.Add(NSLOCTEXT("UnrealPSKPSA", "UEViewerHierarchyWarning", "This PSA uses a UEViewer placeholder hierarchy. Bones are matched by name using the target mesh hierarchy; select the corresponding character mesh.").ToString());
     if (Reader.Bones.Num() > Mapping.Num())
-        Warnings.Add(FString::Printf(TEXT("忽略 %d 根目标网格中不存在的源骨骼。"), Reader.Bones.Num() - Mapping.Num()));
+        Warnings.Add(FText::Format(NSLOCTEXT("UnrealPSKPSA", "UnmatchedSourceBones", "Ignored {0} source bones absent from the target mesh."), Reader.Bones.Num() - Mapping.Num()).ToString());
     if (Ref.GetRawBoneNum() > Mapping.Num())
-        Warnings.Add(FString::Printf(TEXT("%d 根目标骨骼缺失动画轨道，保持参考姿态。"), Ref.GetRawBoneNum() - Mapping.Num()));
+        Warnings.Add(FText::Format(NSLOCTEXT("UnrealPSKPSA", "MissingTargetTracks", "{0} target bones have no animation tracks and keep their reference pose."), Ref.GetRawBoneNum() - Mapping.Num()).ToString());
     if (Reader.InterpolatedKeyCount + Reader.CopiedKeyCount > 0)
-        Warnings.Add(FString::Printf(TEXT("已修复 %d 个骨骼关键帧（中间插值 %d，首尾复制 %d）；补帧为估算姿态。"),
-            Reader.InterpolatedKeyCount + Reader.CopiedKeyCount, Reader.InterpolatedKeyCount, Reader.CopiedKeyCount));
+        Warnings.Add(FText::Format(NSLOCTEXT("UnrealPSKPSA", "RepairedKeys", "Repaired {0} bone keys ({1} interpolated, {2} copied at the ends); repaired poses are estimates."), Reader.InterpolatedKeyCount + Reader.CopiedKeyCount, Reader.InterpolatedKeyCount, Reader.CopiedKeyCount).ToString());
     if (OutWarnings) *OutWarnings = Warnings;
     for (const FPsaSequenceInfo& Info : Reader.Sequences)
     {
@@ -97,7 +96,7 @@ bool FPsaImporter::ImportFile(const FString& Filename, USkeletalMesh* Mesh, cons
         UObject* Existing = FindObject<UObject>(Package, *AssetName);
         UAnimSequence* Sequence = Cast<UAnimSequence>(Existing);
         if (Existing && (!Sequence || Sequence->GetSkeleton() != Mesh->GetSkeleton()))
-        { Error = TEXT("同名资产的类型或 Skeleton 不匹配，未覆盖：") + PackageName; return false; }
+        { Error = FText::Format(NSLOCTEXT("UnrealPSKPSA", "ExistingAssetMismatch", "The existing asset type or Skeleton does not match; not overwritten: {0}"), FText::FromString(PackageName)).ToString(); return false; }
         if (Sequence)
         {
             Sequence->WaitOnExistingCompression();
@@ -181,7 +180,7 @@ bool FPsaImporter::ImportFile(const FString& Filename, USkeletalMesh* Mesh, cons
         Controller.CloseBracket(false);
         if (!bTracksOK)
         {
-            Error = TEXT("UE 写入动画轨道失败：") + AssetName;
+            Error = FText::Format(NSLOCTEXT("UnrealPSKPSA", "WriteTracksFailed", "UE could not write animation tracks: {0}"), FText::FromString(AssetName)).ToString();
             if (!Existing) Sequence->MarkAsGarbage();
             return false;
         }
@@ -203,13 +202,12 @@ bool FPsaImporter::ImportFile(const FString& Filename, USkeletalMesh* Mesh, cons
             FSavePackageArgs SaveArgs;
             SaveArgs.TopLevelFlags = RF_Public | RF_Standalone;
             if (!UPackage::SavePackage(Package, Sequence, *SavePath, SaveArgs))
-            { Error = TEXT("动画已生成，但保存失败，请检查输出目录后手动保存：") + PackageName; return false; }
+            { Error = FText::Format(NSLOCTEXT("UnrealPSKPSA", "SaveAnimationFailed", "The animation was created but could not be saved. Check the output folder and save manually: {0}"), FText::FromString(PackageName)).ToString(); return false; }
         }
     }
-    Summary = FString::Printf(TEXT("%s：%d 个动画；匹配 %d/%d 根目标骨骼。"),
-        *FPaths::GetCleanFilename(Filename), CreatedCount, Mapping.Num(), Ref.GetRawBoneNum());
-    Summary += TEXT("朝向：") + Orientation.Description() + TEXT("。");
-    Summary += FString::Printf(TEXT("来源：%s%s。"), bFModel ? TEXT("FModel") : TEXT("UEViewer / ActorX"), Options.bAutoDetectSource ? TEXT("（自动识别）") : TEXT("（手动选择）"));
+    Summary = FText::Format(NSLOCTEXT("UnrealPSKPSA", "FileSummary", "{0}: {1} animations; matched {2}/{3} target bones."), FText::FromString(FPaths::GetCleanFilename(Filename)), CreatedCount, Mapping.Num(), Ref.GetRawBoneNum()).ToString();
+    Summary += TEXT(" ") + FText::Format(NSLOCTEXT("UnrealPSKPSA", "OrientationSummary", "Orientation: {0}."), FText::FromString(Orientation.Description())).ToString();
+    Summary += TEXT(" ") + FText::Format(NSLOCTEXT("UnrealPSKPSA", "SourceSummary", "Source: {0} {1}."), FText::FromString(bFModel ? TEXT("FModel") : TEXT("UEViewer / ActorX")), Options.bAutoDetectSource ? NSLOCTEXT("UnrealPSKPSA", "AutomaticSource", "(auto-detected)") : NSLOCTEXT("UnrealPSKPSA", "ManualSource", "(manual)")).ToString();
     // Keep warnings in the legacy summary for callers that do not request separate diagnostics.
     if (!OutWarnings && !Warnings.IsEmpty()) Summary += FString::Join(Warnings, TEXT(""));
     return true;

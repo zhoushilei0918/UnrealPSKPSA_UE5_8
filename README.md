@@ -6,7 +6,7 @@
 
 **简体中文** · [English](README.en.md)
 
-[安装](#安装) · [导入模型](#导入模型) · [导入动画](#导入动画) · [查看结果](#查看结果)
+[安装](#安装) · [切换语言](#切换语言) · [导入模型](#导入模型) · [导入动画](#导入动画) · [查看结果](#查看结果)
 
 </div>
 
@@ -19,6 +19,12 @@
 1. 将插件放入项目的 `Plugins/UnrealPSKPSA` 目录，确保其中包含 `UnrealPSKPSA.uplugin`。
 2. 使用 UE 5.8 对应的 C++ 编译环境编译项目的 **Editor** 目标；纯蓝图项目可先添加一个 C++ 类。
 3. 在 **Edit → Plugins** 中启用 **Unreal PSK / PSKX / PSA Importer**，按提示重启编辑器。
+
+## 切换语言
+
+插件随 **UE 编辑器语言**显示简体中文或英文。在 **Edit → Editor Preferences → General → Region & Language → Editor Language** 中选择 **简体中文**或 **English**，然后关闭并重新打开导入面板。
+
+菜单、面板、选项说明及新生成的导入日志均支持中英文。语言切换不会修改模型朝向或导入参数。请保留插件的 `Content/Localization` 文件夹，它包含随插件提供的语言资源。
 
 ## 导入模型
 

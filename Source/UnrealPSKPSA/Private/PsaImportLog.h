@@ -7,13 +7,13 @@ enum class EPsaImportLogLevel : uint8 { Error, Warning, Success };
 class FPsaImportLog
 {
 public:
-    static const TCHAR* Label(EPsaImportLogLevel Level)
+    static FText Label(EPsaImportLogLevel Level)
     {
         switch (Level)
         {
-        case EPsaImportLogLevel::Error: return TEXT("错误");
-        case EPsaImportLogLevel::Warning: return TEXT("警告");
-        default: return TEXT("成功");
+        case EPsaImportLogLevel::Error: return NSLOCTEXT("UnrealPSKPSA", "LogError", "Error");
+        case EPsaImportLogLevel::Warning: return NSLOCTEXT("UnrealPSKPSA", "LogWarning", "Warning");
+        default: return NSLOCTEXT("UnrealPSKPSA", "LogSuccess", "Success");
         }
     }
     void Reset() { Entries.Reset(); }
@@ -32,11 +32,11 @@ public:
     }
     FString DisplayText() const
     {
-        if (Entries.IsEmpty()) return TEXT("尚无导入日志。");
+        if (Entries.IsEmpty()) return NSLOCTEXT("UnrealPSKPSA", "NoLog", "No import log yet.").ToString();
         TArray<FString> Lines;
         for (const auto& Entry : Entries)
-            if (IsVisible(Entry.Level)) Lines.Add(FString::Printf(TEXT("[%s] %s"), Label(Entry.Level), *Entry.Message));
-        return Lines.IsEmpty() ? FString::Printf(TEXT("当前筛选条件下没有日志（共 %d 条）。"), Entries.Num()) : FString::Join(Lines, TEXT("\n\n"));
+            if (IsVisible(Entry.Level)) Lines.Add(FString::Printf(TEXT("[%s] %s"), *Label(Entry.Level).ToString(), *Entry.Message));
+        return Lines.IsEmpty() ? FText::Format(NSLOCTEXT("UnrealPSKPSA", "NoVisibleLog", "No entries match the current filters ({0} total)."), Entries.Num()).ToString() : FString::Join(Lines, TEXT("\n\n"));
     }
 private:
     struct FEntry { EPsaImportLogLevel Level; FString Message; };

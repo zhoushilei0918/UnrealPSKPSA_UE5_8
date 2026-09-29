@@ -32,8 +32,7 @@ namespace
                     const int32 Next = Frame < Sequence.NumRawFrames ? Frame : INDEX_NONE;
                     if (Previous == INDEX_NONE && Next == INDEX_NONE)
                     {
-                        Reader.Error = FString::Printf(TEXT("动画 %s 的骨骼 %s 全部帧无效，没有可用于补帧的有效帧。"),
-                            *Sequence.Name, UTF8_TO_TCHAR(Reader.Bones[Bone].Name));
+                        Reader.Error = FText::Format(NSLOCTEXT("UnrealPSKPSA", "NoRepairAnchor", "Animation {0}, bone {1} has no valid frames to use for repair."), FText::FromString(Sequence.Name), FText::FromString(UTF8_TO_TCHAR(Reader.Bones[Bone].Name))).ToString();
                         return false;
                     }
                     const bool bInterpolate = Previous != INDEX_NONE && Next != INDEX_NONE;
@@ -50,7 +49,7 @@ namespace
                             FMath::Lerp(OriginalScales[Left].Scale, OriginalScales[Right].Scale, Alpha);
                         if (Key.Position.ContainsNaN() || Key.Rotation.ContainsNaN() || Scale.ContainsNaN())
                         {
-                            Reader.Error = TEXT("有效帧数值超出补帧计算范围，请重新导出动画。");
+                            Reader.Error = NSLOCTEXT("UnrealPSKPSA", "RepairOverflow", "Valid key values exceed the repair calculation range. Export the animation again.").ToString();
                             return false;
                         }
                         // Overlapping sequence ranges must not silently overwrite one another
@@ -59,7 +58,7 @@ namespace
                             !Reader.Keys[KeyIndex].Rotation.Equals(Key.Rotation, 0.00001f) ||
                             (!Reader.ScaleKeys.IsEmpty() && !Reader.ScaleKeys[KeyIndex].Scale.Equals(Scale, 0.00001f))))
                         {
-                            Reader.Error = TEXT("动画帧区间重叠，补帧结果存在冲突，请分别导出动画后再导入。");
+                            Reader.Error = NSLOCTEXT("UnrealPSKPSA", "RepairOverlap", "Overlapping animation ranges produce conflicting repairs. Export and import each animation separately.").ToString();
                             return false;
                         }
                         Reader.Keys[KeyIndex] = Key;
@@ -77,7 +76,7 @@ namespace
         for (int32 Key = 0; Key < Invalid.Num(); ++Key)
             if (Invalid[Key] && !Repaired[Key])
             {
-                Reader.Error = TEXT("无效关键帧位于动画范围之外，无法确定补帧依据。");
+                Reader.Error = NSLOCTEXT("UnrealPSKPSA", "RepairOutsideRange", "Invalid keys lie outside the animation ranges; no repair anchors can be determined.").ToString();
                 return false;
             }
         return true;
@@ -87,27 +86,27 @@ namespace
 FPsaReader::FPsaReader(const FString& Filename, bool bRepairInvalidKeys)
 {
     TArray<uint8> Bytes;
-    if (!FFileHelper::LoadFileToArray(Bytes, *Filename)) { Error = TEXT("无法读取 PSA 文件。"); return; }
+    if (!FFileHelper::LoadFileToArray(Bytes, *Filename)) { Error = NSLOCTEXT("UnrealPSKPSA", "PsaReadFailed", "Cannot read the PSA file.").ToString(); return; }
     FMemoryReader Ar(Bytes);
     TSet<FString> Seen;
     TArray<int32> InvalidPoseKeys, InvalidScaleKeys;
     while (Ar.Tell() < Ar.TotalSize())
     {
-        if (Ar.TotalSize() - Ar.Tell() < 32) { Error = TEXT("PSA 数据块头被截断。"); return; }
+        if (Ar.TotalSize() - Ar.Tell() < 32) { Error = NSLOCTEXT("UnrealPSKPSA", "PsaTruncatedHeader", "The PSA chunk header is truncated.").ToString(); return; }
         const FString Name = ReadName(Ar, 20);
         int32 Type, Size, Count;
         Ar << Type << Size << Count;
-        if (Seen.IsEmpty() && Name != TEXT("ANIMHEAD")) { Error = TEXT("文件不是有效的 PSA（缺少 ANIMHEAD）。"); return; }
+        if (Seen.IsEmpty() && Name != TEXT("ANIMHEAD")) { Error = NSLOCTEXT("UnrealPSKPSA", "PsaMissingSignature", "Invalid PSA file: missing ANIMHEAD.").ToString(); return; }
         const int64 Payload = int64(Size) * Count;
         if (Size < 0 || Count < 0 || (Count > 0 && Size == 0) || Payload > Ar.TotalSize() - Ar.Tell())
-        { Error = FString::Printf(TEXT("PSA 数据块 %s 长度无效或文件被截断。"), *Name); return; }
+        { Error = FText::Format(NSLOCTEXT("UnrealPSKPSA", "PsaInvalidChunk", "PSA chunk {0} has an invalid size or is truncated."), FText::FromString(Name)).ToString(); return; }
         const int64 End = Ar.Tell() + Payload;
         const bool Known = Name == TEXT("BONENAMES") || Name == TEXT("ANIMINFO") || Name == TEXT("ANIMKEYS") || Name == TEXT("SCALEKEYS");
-        if (Known && Seen.Contains(Name)) { Error = TEXT("PSA 包含重复的数据块。"); return; }
+        if (Known && Seen.Contains(Name)) { Error = NSLOCTEXT("UnrealPSKPSA", "PsaDuplicateChunk", "The PSA contains duplicate chunks.").ToString(); return; }
         Seen.Add(Name);
         auto RequireSize = [&](int32 Expected)
         {
-            if (Size != Expected) { Error = FString::Printf(TEXT("%s 记录大小应为 %d，实际为 %d。"), *Name, Expected, Size); return false; }
+            if (Size != Expected) { Error = FText::Format(NSLOCTEXT("UnrealPSKPSA", "PsaRecordSize", "{0} record size should be {1}; found {2}."), FText::FromString(Name), Expected, Size).ToString(); return false; }
             return true;
         };
         if (Name == TEXT("BONENAMES"))
@@ -135,7 +134,7 @@ FPsaReader::FPsaReader(const FString& Filename, bool bRepairInvalidKeys)
                 float Reduction, TrackTime;
                 Ar << Info.TotalBones << RootInclude << Compression << KeyQuotum << Reduction << TrackTime << Info.AnimRate;
                 Ar << StartBone << Info.FirstRawFrame << Info.NumRawFrames;
-                if (StartBone != 0 || Compression != 0) { Error = TEXT("暂不支持局部骨骼或压缩的 PSA 数据。"); return; }
+                if (StartBone != 0 || Compression != 0) { Error = NSLOCTEXT("UnrealPSKPSA", "PsaUnsupportedData", "Partial-skeleton or compressed PSA data is not supported.").ToString(); return; }
             }
         }
         else if (Name == TEXT("ANIMKEYS"))
@@ -149,14 +148,14 @@ FPsaReader::FPsaReader(const FString& Filename, bool bRepairInvalidKeys)
                 Ar.Serialize(&Key.Rotation, 16);
                 Ar << Key.Time;
                 if (!FMath::IsFinite(Key.Time) || Key.Time < 0)
-                { Error = FString::Printf(TEXT("第 %d 个动画关键帧时间无效，请重新导出。"), KeyIndex); return; }
+                { Error = FText::Format(NSLOCTEXT("UnrealPSKPSA", "PsaInvalidKeyTime", "Animation key {0} has an invalid time. Export it again."), KeyIndex).ToString(); return; }
                 const float RotationLength = Key.Rotation.SizeSquared();
                 const bool bInvalidPose = Key.Position.ContainsNaN() || Key.Rotation.ContainsNaN() ||
                     !FMath::IsFinite(RotationLength) || RotationLength < SMALL_NUMBER;
                 if (bInvalidPose)
                 {
                     if (!bRepairInvalidKeys)
-                    { Error = FString::Printf(TEXT("第 %d 个动画关键帧包含无效的位置或旋转（如零四元数）。可勾选“修复无效关键帧”尝试补帧，或重新导出。"), KeyIndex); return; }
+                    { Error = FText::Format(NSLOCTEXT("UnrealPSKPSA", "PsaInvalidPose", "Animation key {0} contains an invalid position or rotation (such as a zero quaternion). Enable \"Repair Invalid Keys\" to attempt repair, or export it again."), KeyIndex).ToString(); return; }
                     InvalidPoseKeys.Add(KeyIndex);
                 }
                 else Key.Rotation.Normalize();
@@ -172,10 +171,10 @@ FPsaReader::FPsaReader(const FString& Filename, bool bRepairInvalidKeys)
             {
                 Ar.Serialize(&Key.Scale, 12); Ar << Key.Time;
                 if (!FMath::IsFinite(Key.Time) || Key.Time < 0)
-                { Error = TEXT("动画包含无效的缩放关键帧时间，请重新导出。"); return; }
+                { Error = NSLOCTEXT("UnrealPSKPSA", "PsaInvalidScaleTime", "The animation contains an invalid scale key time. Export it again.").ToString(); return; }
                 if (Key.Scale.ContainsNaN())
                 {
-                    if (!bRepairInvalidKeys) { Error = TEXT("动画包含无效的缩放。可勾选“修复无效关键帧”尝试补帧，或重新导出。"); return; }
+                    if (!bRepairInvalidKeys) { Error = NSLOCTEXT("UnrealPSKPSA", "PsaInvalidScale", "The animation contains invalid scale values. Enable \"Repair Invalid Keys\" to attempt repair, or export it again.").ToString(); return; }
                     InvalidScaleKeys.Add(KeyIndex);
                 }
                 ++KeyIndex;
@@ -183,7 +182,7 @@ FPsaReader::FPsaReader(const FString& Filename, bool bRepairInvalidKeys)
         }
         Ar.Seek(End);
     }
-    if (Bones.IsEmpty() || Sequences.IsEmpty() || Keys.IsEmpty()) { Error = TEXT("PSA 缺少骨骼、动画信息或关键帧。"); return; }
+    if (Bones.IsEmpty() || Sequences.IsEmpty() || Keys.IsEmpty()) { Error = NSLOCTEXT("UnrealPSKPSA", "PsaMissingData", "The PSA is missing bones, animation information, or keys.").ToString(); return; }
     // UEViewer ExportPsk.cpp::DoExportPsa writes this exact metadata pattern.
     // Do not generalize to arbitrary parent conflicts: real hierarchies still need
     // strict validation, including the FModel files used by existing imports.
@@ -202,7 +201,7 @@ FPsaReader::FPsaReader(const FString& Filename, bool bRepairInvalidKeys)
         const FName Name(UTF8_TO_TCHAR(Bone.Name));
         if (Name.IsNone() || BoneNames.Contains(Name) || (Index == 0 && Bone.ParentIndex != -1 && Bone.ParentIndex != 0) ||
             (Index > 0 && (Bone.ParentIndex < 0 || Bone.ParentIndex >= Index)))
-        { Error = TEXT("PSA 骨骼名称重复、为空或层级无效。"); return; }
+        { Error = NSLOCTEXT("UnrealPSKPSA", "PsaInvalidHierarchy", "The PSA has duplicate or empty bone names, or an invalid hierarchy.").ToString(); return; }
         BoneNames.Add(Name);
         if (Index == 0) Bone.ParentIndex = INDEX_NONE;
     }
@@ -211,9 +210,9 @@ FPsaReader::FPsaReader(const FString& Filename, bool bRepairInvalidKeys)
         const int64 EndKey = (int64(Info.FirstRawFrame) + Info.NumRawFrames) * Info.TotalBones;
         if (Info.Name.IsEmpty() || Info.TotalBones != Bones.Num() || Info.FirstRawFrame < 0 || Info.NumRawFrames < 1 ||
             !FMath::IsFinite(Info.AnimRate) || Info.AnimRate <= 0 || Info.AnimRate > 1000 || EndKey > Keys.Num())
-        { Error = TEXT("PSA 动画骨骼数量、帧范围或帧率无效。"); return; }
+        { Error = NSLOCTEXT("UnrealPSKPSA", "PsaInvalidSequence", "The PSA animation bone count, frame range, or frame rate is invalid.").ToString(); return; }
     }
-    if (!ScaleKeys.IsEmpty() && ScaleKeys.Num() != Keys.Num()) { Error = TEXT("PSA 缩放帧数量与动画帧数量不一致。"); return; }
+    if (!ScaleKeys.IsEmpty() && ScaleKeys.Num() != Keys.Num()) { Error = NSLOCTEXT("UnrealPSKPSA", "PsaScaleCountMismatch", "The PSA scale key count does not match the animation key count.").ToString(); return; }
     if (!InvalidPoseKeys.IsEmpty() || !InvalidScaleKeys.IsEmpty())
     {
         TBitArray<> Invalid(false, Keys.Num());

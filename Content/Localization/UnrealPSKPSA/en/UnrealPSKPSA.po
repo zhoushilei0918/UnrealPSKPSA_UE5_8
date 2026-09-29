@@ -1,0 +1,1016 @@
+﻿# UnrealPSKPSA English translation.
+# Fill out your copyright notice in the Description page of Project Settings.
+# 
+msgid ""
+msgstr ""
+"Project-Id-Version: UnrealPSKPSA\n"
+"POT-Creation-Date: 2026-09-29 16:32\n"
+"PO-Revision-Date: 2026-09-29 16:32\n"
+"Language-Team: \n"
+"Language: en\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#. Key:	ActorXImportSettings
+#. SourceLocation:	/Script/UnrealPSKPSA.ActorXImportSettings [Class DisplayName meta-data]
+#: /Script/UnrealPSKPSA.ActorXImportSettings [Class DisplayName meta-data]
+msgctxt "UObjectDisplayNames,ActorXImportSettings"
+msgid "Actor XImport Settings"
+msgstr "Actor XImport Settings"
+
+#. Key:	ActorXImportSettings:Orientation
+#. SourceLocation:	/Script/UnrealPSKPSA.ActorXImportSettings:Orientation [StructProperty DisplayName meta-data]
+#: /Script/UnrealPSKPSA.ActorXImportSettings:Orientation [StructProperty DisplayName meta-data]
+msgctxt "UObjectDisplayNames,ActorXImportSettings:Orientation"
+msgid "Orientation"
+msgstr "Orientation"
+
+#. Key:	ActorXMeshImportData
+#. SourceLocation:	/Script/UnrealPSKPSA.ActorXMeshImportData [Class DisplayName meta-data]
+#: /Script/UnrealPSKPSA.ActorXMeshImportData [Class DisplayName meta-data]
+msgctxt "UObjectDisplayNames,ActorXMeshImportData"
+msgid "Actor XMesh Import Data"
+msgstr "Actor XMesh Import Data"
+
+#. Key:	ActorXMeshImportData
+#. SourceLocation:	/Script/UnrealPSKPSA.ActorXMeshImportData [Class ToolTip meta-data]
+#: /Script/UnrealPSKPSA.ActorXMeshImportData [Class ToolTip meta-data]
+msgctxt "UObjectToolTips,ActorXMeshImportData"
+msgid "Serialized with the mesh so animations imported in a later editor session use the same basis."
+msgstr "Serialized with the mesh so animations imported in a later editor session use the same basis."
+
+#. Key:	ActorX
+#. SourceLocation:	/Script/UnrealPSKPSA.ActorXMeshImportData:Orientation [StructProperty Category meta-data]
+#: /Script/UnrealPSKPSA.ActorXMeshImportData:Orientation [StructProperty Category meta-data]
+msgctxt "UObjectCategory,ActorX"
+msgid "ActorX"
+msgstr "ActorX"
+
+#. Key:	ActorXMeshImportData:Orientation
+#. SourceLocation:	/Script/UnrealPSKPSA.ActorXMeshImportData:Orientation [StructProperty DisplayName meta-data]
+#: /Script/UnrealPSKPSA.ActorXMeshImportData:Orientation [StructProperty DisplayName meta-data]
+msgctxt "UObjectDisplayNames,ActorXMeshImportData:Orientation"
+msgid "Import Orientation"
+msgstr "Import Orientation"
+
+#. Key:	ActorXOrientation
+#. SourceLocation:	/Script/UnrealPSKPSA.ActorXOrientation [ScriptStruct DisplayName meta-data]
+#: /Script/UnrealPSKPSA.ActorXOrientation [ScriptStruct DisplayName meta-data]
+msgctxt "UObjectDisplayNames,ActorXOrientation"
+msgid "Actor XOrientation"
+msgstr "Actor XOrientation"
+
+#. Key:	ActorXOrientation:SourceForward
+#. SourceLocation:	/Script/UnrealPSKPSA.ActorXOrientation:SourceForward [EnumProperty DisplayName meta-data]
+#: /Script/UnrealPSKPSA.ActorXOrientation:SourceForward [EnumProperty DisplayName meta-data]
+msgctxt "UObjectDisplayNames,ActorXOrientation:SourceForward"
+msgid "Source Forward"
+msgstr "Source Forward"
+
+#. Key:	ActorXOrientation:SourceForward
+#. SourceLocation:	/Script/UnrealPSKPSA.ActorXOrientation:SourceForward [EnumProperty ToolTip meta-data]
+#: /Script/UnrealPSKPSA.ActorXOrientation:SourceForward [EnumProperty ToolTip meta-data]
+msgctxt "UObjectToolTips,ActorXOrientation:SourceForward"
+msgid "Source forward direction after restoring UE coordinates. The girl023 sample uses +X. Use the same settings for every body part of a character."
+msgstr "Source forward direction after restoring UE coordinates. The girl023 sample uses +X. Use the same settings for every body part of a character."
+
+#. Key:	Orientation
+#. SourceLocation:	/Script/UnrealPSKPSA.ActorXOrientation:TargetForward [EnumProperty Category meta-data]
+#: /Script/UnrealPSKPSA.ActorXOrientation:TargetForward [EnumProperty Category meta-data]
+msgctxt "UObjectCategory,Orientation"
+msgid "Orientation"
+msgstr "Orientation"
+
+#. Key:	ActorXOrientation:TargetForward
+#. SourceLocation:	/Script/UnrealPSKPSA.ActorXOrientation:TargetForward [EnumProperty DisplayName meta-data]
+#: /Script/UnrealPSKPSA.ActorXOrientation:TargetForward [EnumProperty DisplayName meta-data]
+msgctxt "UObjectDisplayNames,ActorXOrientation:TargetForward"
+msgid "Target Forward"
+msgstr "Target Forward"
+
+#. Key:	ActorXOrientation:TargetForward
+#. SourceLocation:	/Script/UnrealPSKPSA.ActorXOrientation:TargetForward [EnumProperty ToolTip meta-data]
+#: /Script/UnrealPSKPSA.ActorXOrientation:TargetForward [EnumProperty ToolTip meta-data]
+msgctxt "UObjectToolTips,ActorXOrientation:TargetForward"
+msgid "Forward direction after importing into UE. Rotate around UE +Z, applying the same transform to the mesh and bones."
+msgstr "Forward direction after importing into UE. Rotate around UE +Z, applying the same transform to the mesh and bones."
+
+#. Key:	EActorXForwardAxis.EActorXForwardAxis_MAX
+#. SourceLocation:	/Script/UnrealPSKPSA.EActorXForwardAxis:EActorXForwardAxis_MAX [EnumEntry DisplayName meta-data]
+#: /Script/UnrealPSKPSA.EActorXForwardAxis:EActorXForwardAxis_MAX [EnumEntry DisplayName meta-data]
+msgctxt "UObjectDisplayNames,EActorXForwardAxis.EActorXForwardAxis_MAX"
+msgid "EActor XForward Axis MAX"
+msgstr "EActor XForward Axis MAX"
+
+#. Key:	EActorXForwardAxis.NegativeX
+#. SourceLocation:	/Script/UnrealPSKPSA.EActorXForwardAxis:NegativeX [EnumEntry DisplayName meta-data]
+#: /Script/UnrealPSKPSA.EActorXForwardAxis:NegativeX [EnumEntry DisplayName meta-data]
+msgctxt "UObjectDisplayNames,EActorXForwardAxis.NegativeX"
+msgid "-X"
+msgstr "-X"
+
+#. Key:	EActorXForwardAxis.NegativeY
+#. SourceLocation:	/Script/UnrealPSKPSA.EActorXForwardAxis:NegativeY [EnumEntry DisplayName meta-data]
+#: /Script/UnrealPSKPSA.EActorXForwardAxis:NegativeY [EnumEntry DisplayName meta-data]
+msgctxt "UObjectDisplayNames,EActorXForwardAxis.NegativeY"
+msgid "-Y"
+msgstr "-Y"
+
+#. Key:	EActorXForwardAxis.PositiveX
+#. SourceLocation:	/Script/UnrealPSKPSA.EActorXForwardAxis:PositiveX [EnumEntry DisplayName meta-data]
+#: /Script/UnrealPSKPSA.EActorXForwardAxis:PositiveX [EnumEntry DisplayName meta-data]
+msgctxt "UObjectDisplayNames,EActorXForwardAxis.PositiveX"
+msgid "+X"
+msgstr "+X"
+
+#. Key:	EActorXForwardAxis.PositiveY
+#. SourceLocation:	/Script/UnrealPSKPSA.EActorXForwardAxis:PositiveY [EnumEntry DisplayName meta-data]
+#: /Script/UnrealPSKPSA.EActorXForwardAxis:PositiveY [EnumEntry DisplayName meta-data]
+msgctxt "UObjectDisplayNames,EActorXForwardAxis.PositiveY"
+msgid "+Y"
+msgstr "+Y"
+
+#. Key:	EPsaSource.ActorX
+#. SourceLocation:	/Script/UnrealPSKPSA.EPsaSource:ActorX [EnumEntry DisplayName meta-data]
+#: /Script/UnrealPSKPSA.EPsaSource:ActorX [EnumEntry DisplayName meta-data]
+msgctxt "UObjectDisplayNames,EPsaSource.ActorX"
+msgid "UEViewer / Legacy ActorX"
+msgstr "UEViewer / Legacy ActorX"
+
+#. Key:	EPsaSource.Auto
+#. SourceLocation:	/Script/UnrealPSKPSA.EPsaSource:Auto [EnumEntry DisplayName meta-data]
+#: /Script/UnrealPSKPSA.EPsaSource:Auto [EnumEntry DisplayName meta-data]
+msgctxt "UObjectDisplayNames,EPsaSource.Auto"
+msgid "Auto Detect (Recommended)"
+msgstr "Auto Detect (Recommended)"
+
+#. Key:	EPsaSource.EPsaSource_MAX
+#. SourceLocation:	/Script/UnrealPSKPSA.EPsaSource:EPsaSource_MAX [EnumEntry DisplayName meta-data]
+#: /Script/UnrealPSKPSA.EPsaSource:EPsaSource_MAX [EnumEntry DisplayName meta-data]
+msgctxt "UObjectDisplayNames,EPsaSource.EPsaSource_MAX"
+msgid "EPsa Source MAX"
+msgstr "EPsa Source MAX"
+
+#. Key:	EPsaSource.FModel
+#. SourceLocation:	/Script/UnrealPSKPSA.EPsaSource:FModel [EnumEntry DisplayName meta-data]
+#: /Script/UnrealPSKPSA.EPsaSource:FModel [EnumEntry DisplayName meta-data]
+msgctxt "UObjectDisplayNames,EPsaSource.FModel"
+msgid "FModel / CUE4Parse"
+msgstr "FModel / CUE4Parse"
+
+#. Key:	PsaImportSettings
+#. SourceLocation:	/Script/UnrealPSKPSA.PsaImportSettings [Class DisplayName meta-data]
+#: /Script/UnrealPSKPSA.PsaImportSettings [Class DisplayName meta-data]
+msgctxt "UObjectDisplayNames,PsaImportSettings"
+msgid "Psa Import Settings"
+msgstr "Psa Import Settings"
+
+#. Key:	PsaImportSettings:bRepairInvalidKeys
+#. SourceLocation:	/Script/UnrealPSKPSA.PsaImportSettings:bRepairInvalidKeys [BoolProperty DisplayName meta-data]
+#: /Script/UnrealPSKPSA.PsaImportSettings:bRepairInvalidKeys [BoolProperty DisplayName meta-data]
+msgctxt "UObjectDisplayNames,PsaImportSettings:bRepairInvalidKeys"
+msgid "Repair Invalid Keys"
+msgstr "Repair Invalid Keys"
+
+#. Key:	PsaImportSettings:bRepairInvalidKeys
+#. SourceLocation:	/Script/UnrealPSKPSA.PsaImportSettings:bRepairInvalidKeys [BoolProperty ToolTip meta-data]
+#: /Script/UnrealPSKPSA.PsaImportSettings:bRepairInvalidKeys [BoolProperty ToolTip meta-data]
+msgctxt "UObjectToolTips,PsaImportSettings:bRepairInvalidKeys"
+msgid "Off by default. Repair keys per animation and bone: interpolate interior gaps; copy the nearest valid frame at either end; fail if the entire track is invalid. Position, rotation, and scale are repaired together. Repairs estimate poses and do not recover the original motion."
+msgstr "Off by default. Repair keys per animation and bone: interpolate interior gaps; copy the nearest valid frame at either end; fail if the entire track is invalid. Position, rotation, and scale are repaired together. Repairs estimate poses and do not recover the original motion."
+
+#. Key:	PsaImportSettings:bReplaceExisting
+#. SourceLocation:	/Script/UnrealPSKPSA.PsaImportSettings:bReplaceExisting [BoolProperty DisplayName meta-data]
+#: /Script/UnrealPSKPSA.PsaImportSettings:bReplaceExisting [BoolProperty DisplayName meta-data]
+msgctxt "UObjectDisplayNames,PsaImportSettings:bReplaceExisting"
+msgid "Replace Existing Animations"
+msgstr "Replace Existing Animations"
+
+#. Key:	PsaImportSettings:bReplaceExisting
+#. SourceLocation:	/Script/UnrealPSKPSA.PsaImportSettings:bReplaceExisting [BoolProperty ToolTip meta-data]
+#: /Script/UnrealPSKPSA.PsaImportSettings:bReplaceExisting [BoolProperty ToolTip meta-data]
+msgctxt "UObjectToolTips,PsaImportSettings:bReplaceExisting"
+msgid "Off by default: generate a unique name. When enabled, overwrite only animation sequences using the same Skeleton."
+msgstr "Off by default: generate a unique name. When enabled, overwrite only animation sequences using the same Skeleton."
+
+#. Key:	PsaImportSettings:bUseReferenceScale
+#. SourceLocation:	/Script/UnrealPSKPSA.PsaImportSettings:bUseReferenceScale [BoolProperty DisplayName meta-data]
+#: /Script/UnrealPSKPSA.PsaImportSettings:bUseReferenceScale [BoolProperty DisplayName meta-data]
+msgctxt "UObjectDisplayNames,PsaImportSettings:bUseReferenceScale"
+msgid "Use Mesh Reference Scale"
+msgstr "Use Mesh Reference Scale"
+
+#. Key:	PsaImportSettings:bUseReferenceScale
+#. SourceLocation:	/Script/UnrealPSKPSA.PsaImportSettings:bUseReferenceScale [BoolProperty ToolTip meta-data]
+#: /Script/UnrealPSKPSA.PsaImportSettings:bUseReferenceScale [BoolProperty ToolTip meta-data]
+msgctxt "UObjectToolTips,PsaImportSettings:bUseReferenceScale"
+msgid "Off by default. Ignore PSA animation scale and use each target mesh bone's reference scale, keeping position and rotation. Useful for unusually stretched animations; intentional scale effects are also ignored."
+msgstr "Off by default. Ignore PSA animation scale and use each target mesh bone's reference scale, keeping position and rotation. Useful for unusually stretched animations; intentional scale effects are also ignored."
+
+#. Key:	PsaImportSettings:Destination
+#. SourceLocation:	/Script/UnrealPSKPSA.PsaImportSettings:Destination [StrProperty DisplayName meta-data]
+#: /Script/UnrealPSKPSA.PsaImportSettings:Destination [StrProperty DisplayName meta-data]
+msgctxt "UObjectDisplayNames,PsaImportSettings:Destination"
+msgid "Destination"
+msgstr "Destination"
+
+#. Key:	PsaImportSettings:Destination
+#. SourceLocation:	/Script/UnrealPSKPSA.PsaImportSettings:Destination [StrProperty ToolTip meta-data]
+#: /Script/UnrealPSKPSA.PsaImportSettings:Destination [StrProperty ToolTip meta-data]
+msgctxt "UObjectToolTips,PsaImportSettings:Destination"
+msgid "UE content path, such as /Game/Characters/Animations."
+msgstr "UE content path, such as /Game/Characters/Animations."
+
+#. Key:	Import Options
+#. SourceLocation:	/Script/UnrealPSKPSA.PsaImportSettings:Source [EnumProperty Category meta-data]
+#: /Script/UnrealPSKPSA.PsaImportSettings:Source [EnumProperty Category meta-data]
+msgctxt "UObjectCategory,Import Options"
+msgid "Import Options"
+msgstr "Import Options"
+
+#. Key:	PsaImportSettings:Source
+#. SourceLocation:	/Script/UnrealPSKPSA.PsaImportSettings:Source [EnumProperty DisplayName meta-data]
+#: /Script/UnrealPSKPSA.PsaImportSettings:Source [EnumProperty DisplayName meta-data]
+msgctxt "UObjectDisplayNames,PsaImportSettings:Source"
+msgid "PSA Source"
+msgstr "PSA Source"
+
+#. Key:	PsaImportSettings:Source
+#. SourceLocation:	/Script/UnrealPSKPSA.PsaImportSettings:Source [EnumProperty ToolTip meta-data]
+#: /Script/UnrealPSKPSA.PsaImportSettings:Source [EnumProperty ToolTip meta-data]
+msgctxt "UObjectToolTips,PsaImportSettings:Source"
+msgid "Detect UEViewer metadata per file, otherwise use FModel. You can also choose the source manually. When UEViewer provides no real hierarchy, match bones by name and use the target mesh hierarchy."
+msgstr "Detect UEViewer metadata per file, otherwise use FModel. You can also choose the source manually. When UEViewer provides no real hierarchy, match bones by name and use the target mesh hierarchy."
+
+#. Key:	Target
+#. SourceLocation:	/Script/UnrealPSKPSA.PsaImportSettings:TargetMesh [ObjectProperty Category meta-data]
+#: /Script/UnrealPSKPSA.PsaImportSettings:TargetMesh [ObjectProperty Category meta-data]
+msgctxt "UObjectCategory,Target"
+msgid "Target"
+msgstr "Target"
+
+#. Key:	PsaImportSettings:TargetMesh
+#. SourceLocation:	/Script/UnrealPSKPSA.PsaImportSettings:TargetMesh [ObjectProperty DisplayName meta-data]
+#: /Script/UnrealPSKPSA.PsaImportSettings:TargetMesh [ObjectProperty DisplayName meta-data]
+msgctxt "UObjectDisplayNames,PsaImportSettings:TargetMesh"
+msgid "Target Skeletal Mesh"
+msgstr "Target Skeletal Mesh"
+
+#. Key:	PsaImportSettings:TargetMesh
+#. SourceLocation:	/Script/UnrealPSKPSA.PsaImportSettings:TargetMesh [ObjectProperty ToolTip meta-data]
+#: /Script/UnrealPSKPSA.PsaImportSettings:TargetMesh [ObjectProperty ToolTip meta-data]
+msgctxt "UObjectToolTips,PsaImportSettings:TargetMesh"
+msgid "Select a Skeletal Mesh imported from PSK or FBX. Animations will use its Skeleton."
+msgstr "Select a Skeletal Mesh imported from PSK or FBX. Animations will use its Skeleton."
+
+#. Key:	PsaImportSettings:TranslationScale
+#. SourceLocation:	/Script/UnrealPSKPSA.PsaImportSettings:TranslationScale [FloatProperty DisplayName meta-data]
+#: /Script/UnrealPSKPSA.PsaImportSettings:TranslationScale [FloatProperty DisplayName meta-data]
+msgctxt "UObjectDisplayNames,PsaImportSettings:TranslationScale"
+msgid "Translation Scale"
+msgstr "Translation Scale"
+
+#. Key:	PsaImportSettings:TranslationScale
+#. SourceLocation:	/Script/UnrealPSKPSA.PsaImportSettings:TranslationScale [FloatProperty ToolTip meta-data]
+#: /Script/UnrealPSKPSA.PsaImportSettings:TranslationScale [FloatProperty ToolTip meta-data]
+msgctxt "UObjectToolTips,PsaImportSettings:TranslationScale"
+msgid "Default: 1. Adjust only if the FBX mesh uses different units."
+msgstr "Default: 1. Adjust only if the FBX mesh uses different units."
+
+#. Key:	UnknownAxis
+#. SourceLocation:	Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/ActorXImportSettings.cpp(18)
+#: Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/ActorXImportSettings.cpp(18)
+msgctxt "UnrealPSKPSA,UnknownAxis"
+msgid "Unknown"
+msgstr "Unknown"
+
+#. Key:	OrientationDescription
+#. SourceLocation:	Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/ActorXImportSettings.cpp(24)
+#: Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/ActorXImportSettings.cpp(24)
+msgctxt "UnrealPSKPSA,OrientationDescription"
+msgid "Source {0} → UE {1}"
+msgstr "Source {0} → UE {1}"
+
+#. Key:	MeshPanelTitle
+#. SourceLocation:	Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/ActorXImportWindow.cpp(23)
+#: Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/ActorXImportWindow.cpp(23)
+msgctxt "UnrealPSKPSA,MeshPanelTitle"
+msgid "PSK / PSKX Import Orientation"
+msgstr "PSK / PSKX Import Orientation"
+
+#. Key:	MeshOrientationNote
+#. SourceLocation:	Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/ActorXImportWindow.cpp(33)
+#: Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/ActorXImportWindow.cpp(33)
+msgctxt "UnrealPSKPSA,MeshOrientationNote"
+msgid "Use the same source and target forward directions for all body, hair, and clothing parts. Meshes, normals, morphs, and bones rotate together; PSA animations inherit the target mesh settings.\nAfter changing an existing mesh orientation, import its PSA animations again."
+msgstr "Use the same source and target forward directions for all body, hair, and clothing parts. Meshes, normals, morphs, and bones rotate together; PSA animations inherit the target mesh settings.\nAfter changing an existing mesh orientation, import its PSA animations again."
+
+#. Key:	Import
+#. SourceLocation:	Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/ActorXImportWindow.cpp(38)
+#: Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/ActorXImportWindow.cpp(38)
+msgctxt "UnrealPSKPSA,Import"
+msgid "Import"
+msgstr "Import"
+
+#. Key:	Cancel
+#. SourceLocation:	Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/ActorXImportWindow.cpp(40)
+#: Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/ActorXImportWindow.cpp(40)
+msgctxt "UnrealPSKPSA,Cancel"
+msgid "Cancel"
+msgstr "Cancel"
+
+#. Key:	ImportPSA
+#. SourceLocation:	Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaImporter.cpp(117)
+#: Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaImporter.cpp(117)
+msgctxt "UnrealPSKPSA,ImportPSA"
+msgid "Import PSA animation"
+msgstr "Import PSA animation"
+
+#. Key:	WriteTracksFailed
+#. SourceLocation:	Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaImporter.cpp(183)
+#: Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaImporter.cpp(183)
+msgctxt "UnrealPSKPSA,WriteTracksFailed"
+msgid "UE could not write animation tracks: {0}"
+msgstr "UE could not write animation tracks: {0}"
+
+#. Key:	SaveAnimationFailed
+#. SourceLocation:	Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaImporter.cpp(205)
+#: Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaImporter.cpp(205)
+msgctxt "UnrealPSKPSA,SaveAnimationFailed"
+msgid "The animation was created but could not be saved. Check the output folder and save manually: {0}"
+msgstr "The animation was created but could not be saved. Check the output folder and save manually: {0}"
+
+#. Key:	FileSummary
+#. SourceLocation:	Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaImporter.cpp(208)
+#: Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaImporter.cpp(208)
+msgctxt "UnrealPSKPSA,FileSummary"
+msgid "{0}: {1} animations; matched {2}/{3} target bones."
+msgstr "{0}: {1} animations; matched {2}/{3} target bones."
+
+#. Key:	OrientationSummary
+#. SourceLocation:	Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaImporter.cpp(209)
+#: Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaImporter.cpp(209)
+msgctxt "UnrealPSKPSA,OrientationSummary"
+msgid "Orientation: {0}."
+msgstr "Orientation: {0}."
+
+#. Key:	AutomaticSource
+#. SourceLocation:	Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaImporter.cpp(210)
+#: Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaImporter.cpp(210)
+msgctxt "UnrealPSKPSA,AutomaticSource"
+msgid "(auto-detected)"
+msgstr "(auto-detected)"
+
+#. Key:	ManualSource
+#. SourceLocation:	Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaImporter.cpp(210)
+#: Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaImporter.cpp(210)
+msgctxt "UnrealPSKPSA,ManualSource"
+msgid "(manual)"
+msgstr "(manual)"
+
+#. Key:	SourceSummary
+#. SourceLocation:	Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaImporter.cpp(210)
+#: Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaImporter.cpp(210)
+msgctxt "UnrealPSKPSA,SourceSummary"
+msgid "Source: {0} {1}."
+msgstr "Source: {0} {1}."
+
+#. Key:	MissingTargetSkeleton
+#. SourceLocation:	Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaImporter.cpp(25)
+#: Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaImporter.cpp(25)
+msgctxt "UnrealPSKPSA,MissingTargetSkeleton"
+msgid "Select a Skeletal Mesh that has a Skeleton."
+msgstr "Select a Skeletal Mesh that has a Skeleton."
+
+#. Key:	RootMismatch
+#. SourceLocation:	Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaImporter.cpp(28)
+#: Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaImporter.cpp(28)
+msgctxt "UnrealPSKPSA,RootMismatch"
+msgid "The target mesh and PSA root bone names differ. Select the matching mesh."
+msgstr "The target mesh and PSA root bone names differ. Select the matching mesh."
+
+#. Key:	ParentMismatch
+#. SourceLocation:	Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaImporter.cpp(40)
+#: Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaImporter.cpp(40)
+msgctxt "UnrealPSKPSA,ParentMismatch"
+msgid "{0} (PSA parent: {1}; target parent: {2})"
+msgstr "{0} (PSA parent: {1}; target parent: {2})"
+
+#. Key:	HierarchyMismatch
+#. SourceLocation:	Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaImporter.cpp(45)
+#: Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaImporter.cpp(45)
+msgctxt "UnrealPSKPSA,HierarchyMismatch"
+msgid "Incompatible bone hierarchy. Use the matching source mesh or retarget the animation first:\n"
+msgstr "Incompatible bone hierarchy. Use the matching source mesh or retarget the animation first:\n"
+
+#. Key:	InsufficientMatches
+#. SourceLocation:	Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaImporter.cpp(49)
+#: Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaImporter.cpp(49)
+msgctxt "UnrealPSKPSA,InsufficientMatches"
+msgid "Not enough bones with matching names were found."
+msgstr "Not enough bones with matching names were found."
+
+#. Key:	InvalidTranslationScale
+#. SourceLocation:	Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaImporter.cpp(63)
+#: Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaImporter.cpp(63)
+msgctxt "UnrealPSKPSA,InvalidTranslationScale"
+msgid "Translation scale must be a finite number greater than zero."
+msgstr "Translation scale must be a finite number greater than zero."
+
+#. Key:	InvalidDestination
+#. SourceLocation:	Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaImporter.cpp(69)
+#: Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaImporter.cpp(69)
+msgctxt "UnrealPSKPSA,InvalidDestination"
+msgid "Destination must be a valid content path, such as /Game/Animations."
+msgstr "Destination must be a valid content path, such as /Game/Animations."
+
+#. Key:	UseReferenceScaleWarning
+#. SourceLocation:	Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaImporter.cpp(77)
+#: Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaImporter.cpp(77)
+msgctxt "UnrealPSKPSA,UseReferenceScaleWarning"
+msgid "Using mesh reference scale: PSA animation scale effects are ignored; position and rotation are imported normally."
+msgstr "Using mesh reference scale: PSA animation scale effects are ignored; position and rotation are imported normally."
+
+#. Key:	UEViewerHierarchyWarning
+#. SourceLocation:	Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaImporter.cpp(79)
+#: Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaImporter.cpp(79)
+msgctxt "UnrealPSKPSA,UEViewerHierarchyWarning"
+msgid "This PSA uses a UEViewer placeholder hierarchy. Bones are matched by name using the target mesh hierarchy; select the corresponding character mesh."
+msgstr "This PSA uses a UEViewer placeholder hierarchy. Bones are matched by name using the target mesh hierarchy; select the corresponding character mesh."
+
+#. Key:	UnmatchedSourceBones
+#. SourceLocation:	Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaImporter.cpp(81)
+#: Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaImporter.cpp(81)
+msgctxt "UnrealPSKPSA,UnmatchedSourceBones"
+msgid "Ignored {0} source bones absent from the target mesh."
+msgstr "Ignored {0} source bones absent from the target mesh."
+
+#. Key:	MissingTargetTracks
+#. SourceLocation:	Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaImporter.cpp(83)
+#: Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaImporter.cpp(83)
+msgctxt "UnrealPSKPSA,MissingTargetTracks"
+msgid "{0} target bones have no animation tracks and keep their reference pose."
+msgstr "{0} target bones have no animation tracks and keep their reference pose."
+
+#. Key:	RepairedKeys
+#. SourceLocation:	Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaImporter.cpp(85)
+#: Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaImporter.cpp(85)
+msgctxt "UnrealPSKPSA,RepairedKeys"
+msgid "Repaired {0} bone keys ({1} interpolated, {2} copied at the ends); repaired poses are estimates."
+msgstr "Repaired {0} bone keys ({1} interpolated, {2} copied at the ends); repaired poses are estimates."
+
+#. Key:	ExistingAssetMismatch
+#. SourceLocation:	Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaImporter.cpp(99)
+#: Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaImporter.cpp(99)
+msgctxt "UnrealPSKPSA,ExistingAssetMismatch"
+msgid "The existing asset type or Skeleton does not match; not overwritten: {0}"
+msgstr "The existing asset type or Skeleton does not match; not overwritten: {0}"
+
+#. Key:	LogError
+#. SourceLocation:	Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaImportLog.h(14)
+#: Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaImportLog.h(14)
+msgctxt "UnrealPSKPSA,LogError"
+msgid "Error"
+msgstr "Error"
+
+#. Key:	LogWarning
+#. SourceLocation:	Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaImportLog.h(15)
+#: Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaImportLog.h(15)
+msgctxt "UnrealPSKPSA,LogWarning"
+msgid "Warning"
+msgstr "Warning"
+
+#. Key:	LogSuccess
+#. SourceLocation:	Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaImportLog.h(16)
+#: Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaImportLog.h(16)
+msgctxt "UnrealPSKPSA,LogSuccess"
+msgid "Success"
+msgstr "Success"
+
+#. Key:	NoLog
+#. SourceLocation:	Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaImportLog.h(35)
+#: Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaImportLog.h(35)
+msgctxt "UnrealPSKPSA,NoLog"
+msgid "No import log yet."
+msgstr "No import log yet."
+
+#. Key:	NoVisibleLog
+#. SourceLocation:	Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaImportLog.h(39)
+#: Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaImportLog.h(39)
+msgctxt "UnrealPSKPSA,NoVisibleLog"
+msgid "No entries match the current filters ({0} total)."
+msgstr "No entries match the current filters ({0} total)."
+
+#. Key:	LogFilterTooltip
+#. SourceLocation:	Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaImportWindow.cpp(120)
+#: Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaImportWindow.cpp(120)
+msgctxt "UnrealPSKPSA,LogFilterTooltip"
+msgid "Show or hide this log level. Hiding entries does not discard them. The number is the entry count for this import."
+msgstr "Show or hide this log level. Hiding entries does not discard them. The number is the entry count for this import."
+
+#. Key:	LogFilterCount
+#. SourceLocation:	Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaImportWindow.cpp(129)
+#: Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaImportWindow.cpp(129)
+msgctxt "UnrealPSKPSA,LogFilterCount"
+msgid "{0} ({1})"
+msgstr "{0} ({1})"
+
+#. Key:	SelectedFiles
+#. SourceLocation:	Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaImportWindow.cpp(136)
+#: Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaImportWindow.cpp(136)
+msgctxt "UnrealPSKPSA,SelectedFiles"
+msgid "{0} PSA files selected"
+msgstr "{0} PSA files selected"
+
+#. Key:	ChooseFilesTitle
+#. SourceLocation:	Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaImportWindow.cpp(143)
+#: Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaImportWindow.cpp(143)
+msgctxt "UnrealPSKPSA,ChooseFilesTitle"
+msgid "Choose PSA Animations"
+msgstr "Choose PSA Animations"
+
+#. Key:	ChooseFolderTitle
+#. SourceLocation:	Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaImportWindow.cpp(157)
+#: Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaImportWindow.cpp(157)
+msgctxt "UnrealPSKPSA,ChooseFolderTitle"
+msgid "Choose a PSA Folder (Current Directory Only)"
+msgstr "Choose a PSA Folder (Current Directory Only)"
+
+#. Key:	ImportProgress
+#. SourceLocation:	Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaImportWindow.cpp(181)
+#: Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaImportWindow.cpp(181)
+msgctxt "UnrealPSKPSA,ImportProgress"
+msgid "Importing PSA animations"
+msgstr "Importing PSA animations"
+
+#. Key:	PartialImport
+#. SourceLocation:	Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaImportWindow.cpp(200)
+#: Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaImportWindow.cpp(200)
+msgctxt "UnrealPSKPSA,PartialImport"
+msgid "{0}: import was incomplete; {1} animations were created. Check the results and save status."
+msgstr "{0}: import was incomplete; {1} animations were created. Check the results and save status."
+
+#. Key:	ImportCanceled
+#. SourceLocation:	Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaImportWindow.cpp(205)
+#: Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaImportWindow.cpp(205)
+msgctxt "UnrealPSKPSA,ImportCanceled"
+msgid "Import canceled; {0} files were not processed."
+msgstr "Import canceled; {0} files were not processed."
+
+#. Key:	BatchSummary
+#. SourceLocation:	Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaImportWindow.cpp(206)
+#: Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaImportWindow.cpp(206)
+msgctxt "UnrealPSKPSA,BatchSummary"
+msgid "{0} {1} files succeeded, {2} failed; {3} animations created.\nDestination: {4}"
+msgstr "{0} {1} files succeeded, {2} failed; {3} animations created.\nDestination: {4}"
+
+#. Key:	ImportComplete
+#. SourceLocation:	Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaImportWindow.cpp(206)
+#: Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaImportWindow.cpp(206)
+msgctxt "UnrealPSKPSA,ImportComplete"
+msgid "Import complete."
+msgstr "Import complete."
+
+#. Key:	RemainingCanceled
+#. SourceLocation:	Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaImportWindow.cpp(206)
+#: Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaImportWindow.cpp(206)
+msgctxt "UnrealPSKPSA,RemainingCanceled"
+msgid "Remaining files canceled."
+msgstr "Remaining files canceled."
+
+#. Key:	PanelTitle
+#. SourceLocation:	Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaImportWindow.cpp(216)
+#: Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaImportWindow.cpp(216)
+msgctxt "UnrealPSKPSA,PanelTitle"
+msgid "Import PSA Animations"
+msgstr "Import PSA Animations"
+
+#. Key:	PanelIntroduction
+#. SourceLocation:	Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaImportWindow.cpp(53)
+#: Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaImportWindow.cpp(53)
+msgctxt "UnrealPSKPSA,PanelIntroduction"
+msgid "Select a skeletal mesh imported from PSK or FBX, then choose PSA animations."
+msgstr "Select a skeletal mesh imported from PSK or FBX, then choose PSA animations."
+
+#. Key:	OrientationNoMesh
+#. SourceLocation:	Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaImportWindow.cpp(58)
+#: Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaImportWindow.cpp(58)
+msgctxt "UnrealPSKPSA,OrientationNoMesh"
+msgid "Animation orientation: select a target mesh to inherit its orientation."
+msgstr "Animation orientation: select a target mesh to inherit its orientation."
+
+#. Key:	OrientationInherited
+#. SourceLocation:	Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaImportWindow.cpp(60)
+#: Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaImportWindow.cpp(60)
+msgctxt "UnrealPSKPSA,OrientationInherited"
+msgid "Animation orientation: inherit the target mesh ({0}). To change it, import the mesh with the new orientation, then import the animation again."
+msgstr "Animation orientation: inherit the target mesh ({0}). To change it, import the mesh with the new orientation, then import the animation again."
+
+#. Key:	OrientationNoMetadata
+#. SourceLocation:	Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaImportWindow.cpp(61)
+#: Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaImportWindow.cpp(61)
+msgctxt "UnrealPSKPSA,OrientationNoMetadata"
+msgid "Animation orientation: this mesh has no ActorX orientation metadata; keep its original coordinates. To change an older mesh to +Y, import the PSK again and choose the target direction."
+msgstr "Animation orientation: this mesh has no ActorX orientation metadata; keep its original coordinates. To change an older mesh to +Y, import the PSK again and choose the target direction."
+
+#. Key:	ChooseFiles
+#. SourceLocation:	Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaImportWindow.cpp(67)
+#: Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaImportWindow.cpp(67)
+msgctxt "UnrealPSKPSA,ChooseFiles"
+msgid "Choose PSA Files…"
+msgstr "Choose PSA Files…"
+
+#. Key:	ChooseFolder
+#. SourceLocation:	Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaImportWindow.cpp(69)
+#: Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaImportWindow.cpp(69)
+msgctxt "UnrealPSKPSA,ChooseFolder"
+msgid "Add from Folder…"
+msgstr "Add from Folder…"
+
+#. Key:	Clear
+#. SourceLocation:	Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaImportWindow.cpp(71)
+#: Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaImportWindow.cpp(71)
+msgctxt "UnrealPSKPSA,Clear"
+msgid "Clear"
+msgstr "Clear"
+
+#. Key:	NoFiles
+#. SourceLocation:	Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaImportWindow.cpp(74)
+#: Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaImportWindow.cpp(74)
+msgctxt "UnrealPSKPSA,NoFiles"
+msgid "No PSA files selected"
+msgstr "No PSA files selected"
+
+#. Key:	ImportAnimations
+#. SourceLocation:	Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaImportWindow.cpp(81)
+#: Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaImportWindow.cpp(81)
+msgctxt "UnrealPSKPSA,ImportAnimations"
+msgid "Import Animations"
+msgstr "Import Animations"
+
+#. Key:	ShowResults
+#. SourceLocation:	Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaImportWindow.cpp(83)
+#: Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaImportWindow.cpp(83)
+msgctxt "UnrealPSKPSA,ShowResults"
+msgid "Show Imported Assets"
+msgstr "Show Imported Assets"
+
+#. Key:	SampledPosesNote
+#. SourceLocation:	Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaImportWindow.cpp(92)
+#: Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaImportWindow.cpp(92)
+msgctxt "UnrealPSKPSA,SampledPosesNote"
+msgid "PSA does not include UE notifies, curves, or complete additive settings. Animations are imported as sampled poses."
+msgstr "PSA does not include UE notifies, curves, or complete additive settings. Animations are imported as sampled poses."
+
+#. Key:	ShowLog
+#. SourceLocation:	Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaImportWindow.cpp(97)
+#: Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaImportWindow.cpp(97)
+msgctxt "UnrealPSKPSA,ShowLog"
+msgid "Show log:"
+msgstr "Show log:"
+
+#. Key:	PsaInvalidChunk
+#. SourceLocation:	Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaReader.cpp(102)
+#: Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaReader.cpp(102)
+msgctxt "UnrealPSKPSA,PsaInvalidChunk"
+msgid "PSA chunk {0} has an invalid size or is truncated."
+msgstr "PSA chunk {0} has an invalid size or is truncated."
+
+#. Key:	PsaDuplicateChunk
+#. SourceLocation:	Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaReader.cpp(105)
+#: Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaReader.cpp(105)
+msgctxt "UnrealPSKPSA,PsaDuplicateChunk"
+msgid "The PSA contains duplicate chunks."
+msgstr "The PSA contains duplicate chunks."
+
+#. Key:	PsaRecordSize
+#. SourceLocation:	Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaReader.cpp(109)
+#: Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaReader.cpp(109)
+msgctxt "UnrealPSKPSA,PsaRecordSize"
+msgid "{0} record size should be {1}; found {2}."
+msgstr "{0} record size should be {1}; found {2}."
+
+#. Key:	PsaUnsupportedData
+#. SourceLocation:	Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaReader.cpp(137)
+#: Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaReader.cpp(137)
+msgctxt "UnrealPSKPSA,PsaUnsupportedData"
+msgid "Partial-skeleton or compressed PSA data is not supported."
+msgstr "Partial-skeleton or compressed PSA data is not supported."
+
+#. Key:	PsaInvalidKeyTime
+#. SourceLocation:	Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaReader.cpp(151)
+#: Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaReader.cpp(151)
+msgctxt "UnrealPSKPSA,PsaInvalidKeyTime"
+msgid "Animation key {0} has an invalid time. Export it again."
+msgstr "Animation key {0} has an invalid time. Export it again."
+
+#. Key:	PsaInvalidPose
+#. SourceLocation:	Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaReader.cpp(158)
+#: Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaReader.cpp(158)
+msgctxt "UnrealPSKPSA,PsaInvalidPose"
+msgid "Animation key {0} contains an invalid position or rotation (such as a zero quaternion). Enable \"Repair Invalid Keys\" to attempt repair, or export it again."
+msgstr "Animation key {0} contains an invalid position or rotation (such as a zero quaternion). Enable \"Repair Invalid Keys\" to attempt repair, or export it again."
+
+#. Key:	PsaInvalidScaleTime
+#. SourceLocation:	Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaReader.cpp(174)
+#: Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaReader.cpp(174)
+msgctxt "UnrealPSKPSA,PsaInvalidScaleTime"
+msgid "The animation contains an invalid scale key time. Export it again."
+msgstr "The animation contains an invalid scale key time. Export it again."
+
+#. Key:	PsaInvalidScale
+#. SourceLocation:	Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaReader.cpp(177)
+#: Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaReader.cpp(177)
+msgctxt "UnrealPSKPSA,PsaInvalidScale"
+msgid "The animation contains invalid scale values. Enable \"Repair Invalid Keys\" to attempt repair, or export it again."
+msgstr "The animation contains invalid scale values. Enable \"Repair Invalid Keys\" to attempt repair, or export it again."
+
+#. Key:	PsaMissingData
+#. SourceLocation:	Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaReader.cpp(185)
+#: Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaReader.cpp(185)
+msgctxt "UnrealPSKPSA,PsaMissingData"
+msgid "The PSA is missing bones, animation information, or keys."
+msgstr "The PSA is missing bones, animation information, or keys."
+
+#. Key:	PsaInvalidHierarchy
+#. SourceLocation:	Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaReader.cpp(204)
+#: Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaReader.cpp(204)
+msgctxt "UnrealPSKPSA,PsaInvalidHierarchy"
+msgid "The PSA has duplicate or empty bone names, or an invalid hierarchy."
+msgstr "The PSA has duplicate or empty bone names, or an invalid hierarchy."
+
+#. Key:	PsaInvalidSequence
+#. SourceLocation:	Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaReader.cpp(213)
+#: Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaReader.cpp(213)
+msgctxt "UnrealPSKPSA,PsaInvalidSequence"
+msgid "The PSA animation bone count, frame range, or frame rate is invalid."
+msgstr "The PSA animation bone count, frame range, or frame rate is invalid."
+
+#. Key:	PsaScaleCountMismatch
+#. SourceLocation:	Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaReader.cpp(215)
+#: Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaReader.cpp(215)
+msgctxt "UnrealPSKPSA,PsaScaleCountMismatch"
+msgid "The PSA scale key count does not match the animation key count."
+msgstr "The PSA scale key count does not match the animation key count."
+
+#. Key:	NoRepairAnchor
+#. SourceLocation:	Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaReader.cpp(35)
+#: Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaReader.cpp(35)
+msgctxt "UnrealPSKPSA,NoRepairAnchor"
+msgid "Animation {0}, bone {1} has no valid frames to use for repair."
+msgstr "Animation {0}, bone {1} has no valid frames to use for repair."
+
+#. Key:	RepairOverflow
+#. SourceLocation:	Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaReader.cpp(52)
+#: Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaReader.cpp(52)
+msgctxt "UnrealPSKPSA,RepairOverflow"
+msgid "Valid key values exceed the repair calculation range. Export the animation again."
+msgstr "Valid key values exceed the repair calculation range. Export the animation again."
+
+#. Key:	RepairOverlap
+#. SourceLocation:	Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaReader.cpp(61)
+#: Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaReader.cpp(61)
+msgctxt "UnrealPSKPSA,RepairOverlap"
+msgid "Overlapping animation ranges produce conflicting repairs. Export and import each animation separately."
+msgstr "Overlapping animation ranges produce conflicting repairs. Export and import each animation separately."
+
+#. Key:	RepairOutsideRange
+#. SourceLocation:	Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaReader.cpp(79)
+#: Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaReader.cpp(79)
+msgctxt "UnrealPSKPSA,RepairOutsideRange"
+msgid "Invalid keys lie outside the animation ranges; no repair anchors can be determined."
+msgstr "Invalid keys lie outside the animation ranges; no repair anchors can be determined."
+
+#. Key:	PsaReadFailed
+#. SourceLocation:	Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaReader.cpp(89)
+#: Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaReader.cpp(89)
+msgctxt "UnrealPSKPSA,PsaReadFailed"
+msgid "Cannot read the PSA file."
+msgstr "Cannot read the PSA file."
+
+#. Key:	PsaTruncatedHeader
+#. SourceLocation:	Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaReader.cpp(95)
+#: Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaReader.cpp(95)
+msgctxt "UnrealPSKPSA,PsaTruncatedHeader"
+msgid "The PSA chunk header is truncated."
+msgstr "The PSA chunk header is truncated."
+
+#. Key:	PsaMissingSignature
+#. SourceLocation:	Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaReader.cpp(99)
+#: Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PsaReader.cpp(99)
+msgctxt "UnrealPSKPSA,PsaMissingSignature"
+msgid "Invalid PSA file: missing ANIMHEAD."
+msgstr "Invalid PSA file: missing ANIMHEAD."
+
+#. Key:	PskMeshDescriptionFailed
+#. SourceLocation:	Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PskFactory.cpp(235)
+#: Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PskFactory.cpp(235)
+msgctxt "UnrealPSKPSA,PskMeshDescriptionFailed"
+msgid "Failed to create skeletal mesh description for {0}"
+msgstr "Failed to create skeletal mesh description for {0}"
+
+#. Key:	MissingSkinData
+#. SourceLocation:	Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PskFactory.cpp(34)
+#: Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PskFactory.cpp(34)
+msgctxt "UnrealPSKPSA,MissingSkinData"
+msgid "A PSK/PSKX skeletal mesh requires both bones and skin weights. Incomplete data cannot be imported as a skeletal mesh."
+msgstr "A PSK/PSKX skeletal mesh requires both bones and skin weights. Incomplete data cannot be imported as a skeletal mesh."
+
+#. Key:	PskExtraUVLimit
+#. SourceLocation:	Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PskReader.cpp(110)
+#: Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PskReader.cpp(110)
+msgctxt "UnrealPSKPSA,PskExtraUVLimit"
+msgid "Unsupported extra UV channel (maximum total is 8)."
+msgstr "Unsupported extra UV channel (maximum total is 8)."
+
+#. Key:	PskImportError
+#. SourceLocation:	Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PskReader.cpp(12)
+#: Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PskReader.cpp(12)
+msgctxt "UnrealPSKPSA,PskImportError"
+msgid "Cannot import '{0}': {1}"
+msgstr "Cannot import '{0}': {1}"
+
+#. Key:	PskMissingData
+#. SourceLocation:	Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PskReader.cpp(151)
+#: Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PskReader.cpp(151)
+msgctxt "UnrealPSKPSA,PskMissingData"
+msgid "Missing points, wedges, faces or materials."
+msgstr "Missing points, wedges, faces or materials."
+
+#. Key:	PskNonFinitePosition
+#. SourceLocation:	Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PskReader.cpp(155)
+#: Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PskReader.cpp(155)
+msgctxt "UnrealPSKPSA,PskNonFinitePosition"
+msgid "Non-finite vertex position."
+msgstr "Non-finite vertex position."
+
+#. Key:	PskInvalidWedge
+#. SourceLocation:	Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PskReader.cpp(158)
+#: Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PskReader.cpp(158)
+msgctxt "UnrealPSKPSA,PskInvalidWedge"
+msgid "Invalid wedge point index or UV."
+msgstr "Invalid wedge point index or UV."
+
+#. Key:	PskInvalidFaceWedge
+#. SourceLocation:	Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PskReader.cpp(162)
+#: Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PskReader.cpp(162)
+msgctxt "UnrealPSKPSA,PskInvalidFaceWedge"
+msgid "Invalid face wedge index."
+msgstr "Invalid face wedge index."
+
+#. Key:	PskInvalidMaterial
+#. SourceLocation:	Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PskReader.cpp(163)
+#: Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PskReader.cpp(163)
+msgctxt "UnrealPSKPSA,PskInvalidMaterial"
+msgid "Invalid face material index."
+msgstr "Invalid face material index."
+
+#. Key:	PskAttributeCount
+#. SourceLocation:	Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PskReader.cpp(167)
+#: Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PskReader.cpp(167)
+msgctxt "UnrealPSKPSA,PskAttributeCount"
+msgid "Normal or color count does not match points or wedges."
+msgstr "Normal or color count does not match points or wedges."
+
+#. Key:	PskNonFiniteNormal
+#. SourceLocation:	Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PskReader.cpp(169)
+#: Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PskReader.cpp(169)
+msgctxt "UnrealPSKPSA,PskNonFiniteNormal"
+msgid "Non-finite normal."
+msgstr "Non-finite normal."
+
+#. Key:	PskExtraUVCount
+#. SourceLocation:	Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PskReader.cpp(172)
+#: Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PskReader.cpp(172)
+msgctxt "UnrealPSKPSA,PskExtraUVCount"
+msgid "Extra UV count does not match wedges."
+msgstr "Extra UV count does not match wedges."
+
+#. Key:	PskNonFiniteUV
+#. SourceLocation:	Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PskReader.cpp(174)
+#: Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PskReader.cpp(174)
+msgctxt "UnrealPSKPSA,PskNonFiniteUV"
+msgid "Non-finite UV."
+msgstr "Non-finite UV."
+
+#. Key:	PskReadFailed
+#. SourceLocation:	Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PskReader.cpp(18)
+#: Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PskReader.cpp(18)
+msgctxt "UnrealPSKPSA,PskReadFailed"
+msgid "Cannot read file."
+msgstr "Cannot read file."
+
+#. Key:	PskInvalidBone
+#. SourceLocation:	Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PskReader.cpp(185)
+#: Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PskReader.cpp(185)
+msgctxt "UnrealPSKPSA,PskInvalidBone"
+msgid "Invalid bone name, hierarchy or transform."
+msgstr "Invalid bone name, hierarchy or transform."
+
+#. Key:	PskInvalidWeight
+#. SourceLocation:	Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PskReader.cpp(192)
+#: Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PskReader.cpp(192)
+msgctxt "UnrealPSKPSA,PskInvalidWeight"
+msgid "Invalid skin weight or bone/point index."
+msgstr "Invalid skin weight or bone/point index."
+
+#. Key:	PskNegativeMorphCount
+#. SourceLocation:	Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PskReader.cpp(196)
+#: Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PskReader.cpp(196)
+msgctxt "UnrealPSKPSA,PskNegativeMorphCount"
+msgid "Negative morph vertex count."
+msgstr "Negative morph vertex count."
+
+#. Key:	PskMorphCount
+#. SourceLocation:	Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PskReader.cpp(199)
+#: Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PskReader.cpp(199)
+msgctxt "UnrealPSKPSA,PskMorphCount"
+msgid "Morph data count mismatch."
+msgstr "Morph data count mismatch."
+
+#. Key:	PskInvalidMorph
+#. SourceLocation:	Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PskReader.cpp(202)
+#: Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PskReader.cpp(202)
+msgctxt "UnrealPSKPSA,PskInvalidMorph"
+msgid "Invalid morph delta."
+msgstr "Invalid morph delta."
+
+#. Key:	PskReadSummary
+#. SourceLocation:	Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PskReader.cpp(208)
+#: Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PskReader.cpp(208)
+msgctxt "UnrealPSKPSA,PskReadSummary"
+msgid "Read {0}: {1} points, {2} triangles, {3} bones, {4} UV channels"
+msgstr "Read {0}: {1} points, {2} triangles, {3} bones, {4} UV channels"
+
+#. Key:	PskTruncatedHeader
+#. SourceLocation:	Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PskReader.cpp(27)
+#: Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PskReader.cpp(27)
+msgctxt "UnrealPSKPSA,PskTruncatedHeader"
+msgid "Truncated chunk header."
+msgstr "Truncated chunk header."
+
+#. Key:	PskMissingSignature
+#. SourceLocation:	Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PskReader.cpp(37)
+#: Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PskReader.cpp(37)
+msgctxt "UnrealPSKPSA,PskMissingSignature"
+msgid "Missing ACTRHEAD signature."
+msgstr "Missing ACTRHEAD signature."
+
+#. Key:	PskInvalidChunk
+#. SourceLocation:	Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PskReader.cpp(46)
+#: Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PskReader.cpp(46)
+msgctxt "UnrealPSKPSA,PskInvalidChunk"
+msgid "Invalid or truncated chunk {0}."
+msgstr "Invalid or truncated chunk {0}."
+
+#. Key:	PskRecordSize
+#. SourceLocation:	Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PskReader.cpp(54)
+#: Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PskReader.cpp(54)
+msgctxt "UnrealPSKPSA,PskRecordSize"
+msgid "Chunk {0} has record size {1}; expected {2}."
+msgstr "Chunk {0} has record size {1}; expected {2}."
+
+#. Key:	PskxTypeMismatch
+#. SourceLocation:	Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PskxFactory.cpp(48)
+#: Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/PskxFactory.cpp(48)
+msgctxt "UnrealPSKPSA,PskxTypeMismatch"
+msgid "PSKX detected as {0}, but the existing asset type is {1}. Import with a new name or folder."
+msgstr "PSKX detected as {0}, but the existing asset type is {1}. Import with a new name or folder."
+
+#. Key:	ImportMenu
+#. SourceLocation:	Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/UnrealPSKPSA.cpp(31)
+#: Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/UnrealPSKPSA.cpp(31)
+msgctxt "UnrealPSKPSA,ImportMenu"
+msgid "Import PSA Animation…"
+msgstr "Import PSA Animation…"
+
+#. Key:	ImportMenuTooltip
+#. SourceLocation:	Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/UnrealPSKPSA.cpp(31)
+#: Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/UnrealPSKPSA.cpp(31)
+msgctxt "UnrealPSKPSA,ImportMenuTooltip"
+msgid "Choose a skeletal mesh and import one or more PSA animation files."
+msgstr "Choose a skeletal mesh and import one or more PSA animation files."
+
+#. Key:	ToolbarLabel
+#. SourceLocation:	Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/UnrealPSKPSA.cpp(37)
+#: Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/UnrealPSKPSA.cpp(37)
+msgctxt "UnrealPSKPSA,ToolbarLabel"
+msgid "PSA Animation"
+msgstr "PSA Animation"
+
+#. Key:	ToolbarTooltip
+#. SourceLocation:	Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/UnrealPSKPSA.cpp(37)
+#: Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/UnrealPSKPSA.cpp(37)
+msgctxt "UnrealPSKPSA,ToolbarTooltip"
+msgid "Open the PSA importer to select a skeletal mesh and import animations."
+msgstr "Open the PSA importer to select a skeletal mesh and import animations."
+
+#. Key:	MeshMenuTooltip
+#. SourceLocation:	Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/UnrealPSKPSA.cpp(47)
+#: Plugins/UnrealPSKPSA/Source/UnrealPSKPSA/Private/UnrealPSKPSA.cpp(47)
+msgctxt "UnrealPSKPSA,MeshMenuTooltip"
+msgid "Import PSA animations using this skeletal mesh's Skeleton."
+msgstr "Import PSA animations using this skeletal mesh's Skeleton."
+

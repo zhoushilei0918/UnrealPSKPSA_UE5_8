@@ -1,6 +1,7 @@
 #if WITH_DEV_AUTOMATION_TESTS
 #include "Misc/AutomationTest.h"
 #include "PsaImportLog.h"
+#include "LocalizationTestUtils.h"
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FPsaImportLogTest, "UnrealPSKPSA.PSA.LogFiltering", EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
 bool FPsaImportLogTest::RunTest(const FString& Parameters)
@@ -10,7 +11,8 @@ bool FPsaImportLogTest::RunTest(const FString& Parameters)
     Log.Add(EPsaImportLogLevel::Warning, TEXT("fixed.psa\n补帧为估算姿态。"));
     Log.Add(EPsaImportLogLevel::Success, TEXT("fixed.psa：1 个动画。"));
     const FString FullText = Log.DisplayText();
-    TestTrue(TEXT("All levels initially visible"), FullText.Contains(TEXT("[错误]")) && FullText.Contains(TEXT("[警告]")) && FullText.Contains(TEXT("[成功]")));
+    for (EPsaImportLogLevel Level : {EPsaImportLogLevel::Error, EPsaImportLogLevel::Warning, EPsaImportLogLevel::Success})
+        TestTrue(TEXT("All levels initially visible"), FullText.Contains(TEXT("[") + FPsaImportLog::Label(Level).ToString() + TEXT("]")));
     for (int32 Mask = 0; Mask < 8; ++Mask)
     {
         Log.SetVisible(EPsaImportLogLevel::Error, (Mask & 1) != 0);
@@ -23,7 +25,7 @@ bool FPsaImportLogTest::RunTest(const FString& Parameters)
         TestEqual(TEXT("Hidden errors retained in count"), Log.Count(EPsaImportLogLevel::Error), 1);
         TestEqual(TEXT("Hidden warnings retained in count"), Log.Count(EPsaImportLogLevel::Warning), 1);
         TestEqual(TEXT("Hidden successes retained in count"), Log.Count(EPsaImportLogLevel::Success), 1);
-        if (Mask == 0) TestTrue(TEXT("All filters off explains empty output"), Text.Contains(TEXT("当前筛选条件下没有日志")));
+        if (Mask == 0) TestEqual(TEXT("All filters off explains empty output"), Text, FText::Format(ActorXTestText(TEXT("NoVisibleLog")), 3).ToString());
     }
     TestEqual(TEXT("Restoring filters restores exact log and order"), Log.DisplayText(), FullText);
     Log.SetVisible(EPsaImportLogLevel::Success, false);

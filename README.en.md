@@ -6,7 +6,7 @@
 
 [简体中文](README.md) · **English**
 
-[Install](#install) · [Import meshes](#import-meshes) · [Import animations](#import-animations) · [View results](#view-results)
+[Install](#install) · [Language](#language) · [Import meshes](#import-meshes) · [Import animations](#import-animations) · [View results](#view-results)
 
 </div>
 
@@ -20,10 +20,16 @@ Import **PSK / PSKX meshes** and **PSA animations**, with orientation options, i
 2. Build the project's **Editor** target with the C++ toolchain required by UE 5.8. For a Blueprint-only project, first add a C++ class if needed.
 3. Enable **Unreal PSK / PSKX / PSA Importer** under **Edit → Plugins**, and restart if prompted.
 
+## Language
+
+The plugin follows the **UE editor language**. Choose **English** or **Chinese (Simplified)** under **Edit → Editor Preferences → General → Region & Language → Editor Language**, then close and reopen the import panel.
+
+Menus, panels, option tooltips, and newly generated import logs are localized. Switching languages does not change orientation or import settings. Keep the plugin's `Content/Localization` folder when installing or distributing it.
+
 ## Import meshes
 
 1. Select a destination in the **Content Browser**, then click **Import** or drag in a `.psk` / `.pskx` file.
-2. Choose Source forward and Target forward, then click **导入** (Import). The default is **source +X → UE +Y**; `+X / +Y / -X / -Y` are available.
+2. Choose **Source Forward** and **Target Forward**, then click **Import**. The default is **source +X → UE +Y**; `+X / +Y / -X / -Y` are available.
 3. Inspect the generated mesh. PSKX files containing skeletal data are imported as skeletal meshes.
 
 <p align="center">
@@ -39,7 +45,7 @@ Import **PSK / PSKX meshes** and **PSA animations**, with orientation options, i
 
 ### 1. Open the panel
 
-Select one **Skeletal Mesh**, then right-click → **导入 PSA 动画…** (Import PSA Animation). The target mesh is filled in automatically. You can also use **Tools → 导入 PSA 动画…** or the plugin's toolbar icon.
+Select one **Skeletal Mesh**, then right-click → **Import PSA Animation…**. The target mesh is filled in automatically. You can also use **Tools → Import PSA Animation…** or the plugin's toolbar icon.
 
 <p align="center">
   <img src="assets/psa-context-menu.jpg" alt="Open the PSA importer from a skeletal mesh context menu" width="1000">
@@ -49,12 +55,12 @@ Select one **Skeletal Mesh**, then right-click → **导入 PSA 动画…** (Imp
 
 ### 2. Choose files and import
 
-Confirm the target mesh and destination, and leave the source on **自动识别（推荐）** (Auto Detect). Use **选择 PSA 文件…** (Choose PSA Files) or **从文件夹添加…** (Add from Folder), then click **导入动画** (Import Animations).
+Confirm the target mesh and destination, and leave the source on **Auto Detect (Recommended)**. Use **Choose PSA Files…** or **Add from Folder…**, then click **Import Animations**.
 
 <p align="center">
-  <img src="assets/psa-panel.jpg" alt="Select the target mesh, destination, and PSA files" width="766">
+  <img src="assets/psa-panel.en.jpg" alt="English PSA importer with localized options and log filters" width="766">
   <br>
-  <sub>The panel supports multiple files and compatible target meshes imported from FBX. UI labels are currently Chinese.</sub>
+  <sub>The panel supports multiple files and compatible target meshes imported from FBX. Labels follow the editor language.</sub>
 </p>
 
 | Common option / UI label | Usage |
@@ -68,7 +74,7 @@ Add from Folder reads only the selected directory. Add subdirectories separately
 
 ## View results
 
-Check the success and failure counts after importing. Click **显示导入结果** (Show Imported Assets) to locate animations in the Content Browser. Toggle **错误 / 警告 / 成功** (Error / Warning / Success) independently to filter the log.
+Check the success and failure counts after importing. Click **Show Imported Assets** to locate animations in the Content Browser. Toggle **Error / Warning / Success** independently to filter the log.
 
 <p align="center">
   <img src="assets/psa-result.jpg" alt="Successful animation import with a result summary and categorized logs" width="766">

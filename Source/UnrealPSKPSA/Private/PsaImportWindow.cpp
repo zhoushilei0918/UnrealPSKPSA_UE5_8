@@ -50,37 +50,37 @@ namespace
                 [
                     SNew(SVerticalBox)
                     + SVerticalBox::Slot().AutoHeight().Padding(0,0,0,10)
-                    [SNew(STextBlock).Text(FText::FromString(TEXT("选择已导入 UE 的骨骼网格，再选择 PSA 动画。网格可来自 PSK 或 FBX。"))).AutoWrapText(true)]
+                    [SNew(STextBlock).Text(NSLOCTEXT("UnrealPSKPSA", "PanelIntroduction", "Select a skeletal mesh imported from PSK or FBX, then choose PSA animations.")).AutoWrapText(true)]
                     + SVerticalBox::Slot().AutoHeight()[Details]
                     + SVerticalBox::Slot().AutoHeight().Padding(0,8,0,0)
                     [SNew(STextBlock).AutoWrapText(true).Text_Lambda([this]
                     {
-                        if (!Settings->TargetMesh) return FText::FromString(TEXT("动画朝向：选择目标网格后自动读取，网格与动画保持一致。"));
+                        if (!Settings->TargetMesh) return NSLOCTEXT("UnrealPSKPSA", "OrientationNoMesh", "Animation orientation: select a target mesh to inherit its orientation.");
                         if (const auto* Data = Cast<UActorXMeshImportData>(Settings->TargetMesh->GetAssetImportData()))
-                            return FText::FromString(TEXT("动画朝向：沿用目标网格（") + Data->Orientation.Description() + TEXT("）。如需改变，请先用新朝向导入模型，再导入动画。"));
-                        return FText::FromString(TEXT("动画朝向：目标网格未记录 ActorX 朝向，保持原有坐标。旧模型如需改为 +Y，请重新导入 PSK 并选择目标朝向。"));
+                            return FText::Format(NSLOCTEXT("UnrealPSKPSA", "OrientationInherited", "Animation orientation: inherit the target mesh ({0}). To change it, import the mesh with the new orientation, then import the animation again."), FText::FromString(Data->Orientation.Description()));
+                        return NSLOCTEXT("UnrealPSKPSA", "OrientationNoMetadata", "Animation orientation: this mesh has no ActorX orientation metadata; keep its original coordinates. To change an older mesh to +Y, import the PSK again and choose the target direction.");
                     })]
                     + SVerticalBox::Slot().AutoHeight().Padding(0,12,0,6)
                     [
                         SNew(SHorizontalBox)
                         + SHorizontalBox::Slot().AutoWidth().Padding(0,0,8,0)
-                        [SNew(SButton).Text(FText::FromString(TEXT("选择 PSA 文件…"))).OnClicked(this, &SPsaImportPanel::ChooseFiles)]
+                        [SNew(SButton).Text(NSLOCTEXT("UnrealPSKPSA", "ChooseFiles", "Choose PSA Files…")).OnClicked(this, &SPsaImportPanel::ChooseFiles)]
                         + SHorizontalBox::Slot().AutoWidth().Padding(0,0,8,0)
-                        [SNew(SButton).Text(FText::FromString(TEXT("从文件夹添加…"))).OnClicked(this, &SPsaImportPanel::ChooseFolder)]
+                        [SNew(SButton).Text(NSLOCTEXT("UnrealPSKPSA", "ChooseFolder", "Add from Folder…")).OnClicked(this, &SPsaImportPanel::ChooseFolder)]
                         + SHorizontalBox::Slot().AutoWidth()
-                        [SNew(SButton).Text(FText::FromString(TEXT("清空"))).OnClicked_Lambda([this] { Files.Reset(); RefreshFiles(); return FReply::Handled(); })]
+                        [SNew(SButton).Text(NSLOCTEXT("UnrealPSKPSA", "Clear", "Clear")).OnClicked_Lambda([this] { Files.Reset(); RefreshFiles(); return FReply::Handled(); })]
                     ]
                     + SVerticalBox::Slot().AutoHeight().Padding(0,0,0,6)
-                    [SAssignNew(FileCount, STextBlock).Text(FText::FromString(TEXT("尚未选择 PSA 文件")))]
+                    [SAssignNew(FileCount, STextBlock).Text(NSLOCTEXT("UnrealPSKPSA", "NoFiles", "No PSA files selected"))]
                     + SVerticalBox::Slot().FillHeight(0.35f)
                     [SAssignNew(FileList, SMultiLineEditableTextBox).IsReadOnly(true)]
                     + SVerticalBox::Slot().AutoHeight().Padding(0,10,0,6)
                     [
                         SNew(SHorizontalBox)
                         + SHorizontalBox::Slot().AutoWidth().Padding(0,0,10,0)
-                        [SNew(SButton).Text(FText::FromString(TEXT("导入动画"))).IsEnabled_Lambda([this] { return Settings->TargetMesh != nullptr && !Files.IsEmpty(); }).OnClicked(this, &SPsaImportPanel::Import)]
+                        [SNew(SButton).Text(NSLOCTEXT("UnrealPSKPSA", "ImportAnimations", "Import Animations")).IsEnabled_Lambda([this] { return Settings->TargetMesh != nullptr && !Files.IsEmpty(); }).OnClicked(this, &SPsaImportPanel::Import)]
                         + SHorizontalBox::Slot().AutoWidth()
-                        [SNew(SButton).Text(FText::FromString(TEXT("显示导入结果"))).IsEnabled_Lambda([this] { return !LastImported.IsEmpty(); }).OnClicked_Lambda([this]
+                        [SNew(SButton).Text(NSLOCTEXT("UnrealPSKPSA", "ShowResults", "Show Imported Assets")).IsEnabled_Lambda([this] { return !LastImported.IsEmpty(); }).OnClicked_Lambda([this]
                         {
                             TArray<UObject*> Objects;
                             for (auto& Asset : LastImported) if (Asset.IsValid()) Objects.Add(Asset.Get());
@@ -89,12 +89,12 @@ namespace
                         })]
                     ]
                     + SVerticalBox::Slot().AutoHeight().Padding(0,0,0,6)
-                    [SAssignNew(ResultSummary, STextBlock).AutoWrapText(true).Text(FText::FromString(TEXT("PSA 不包含 UE 通知、曲线和完整增量动画设置，动画按采样姿态导入。")))]
+                    [SAssignNew(ResultSummary, STextBlock).AutoWrapText(true).Text(NSLOCTEXT("UnrealPSKPSA", "SampledPosesNote", "PSA does not include UE notifies, curves, or complete additive settings. Animations are imported as sampled poses."))]
                     + SVerticalBox::Slot().AutoHeight().Padding(0,0,0,6)
                     [
                         SNew(SHorizontalBox)
                         + SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center).Padding(0,0,12,0)
-                        [SNew(STextBlock).Text(FText::FromString(TEXT("显示日志：")))]
+                        [SNew(STextBlock).Text(NSLOCTEXT("UnrealPSKPSA", "ShowLog", "Show log:"))]
                         + SHorizontalBox::Slot().AutoWidth().Padding(0,0,16,0)[MakeLogFilter(EPsaImportLogLevel::Error)]
                         + SHorizontalBox::Slot().AutoWidth().Padding(0,0,16,0)[MakeLogFilter(EPsaImportLogLevel::Warning)]
                         + SHorizontalBox::Slot().AutoWidth()[MakeLogFilter(EPsaImportLogLevel::Success)]
@@ -117,7 +117,7 @@ namespace
             const FLinearColor Color = Level == EPsaImportLogLevel::Error ? FLinearColor(1.0f, 0.3f, 0.3f) :
                 Level == EPsaImportLogLevel::Warning ? FLinearColor(1.0f, 0.7f, 0.15f) : FLinearColor(0.3f, 0.85f, 0.4f);
             return SNew(SCheckBox)
-                .ToolTipText(FText::FromString(TEXT("勾选以显示该级别日志；取消勾选仅隐藏日志。括号内为本次导入的日志条数。")))
+                .ToolTipText(NSLOCTEXT("UnrealPSKPSA", "LogFilterTooltip", "Show or hide this log level. Hiding entries does not discard them. The number is the entry count for this import."))
                 .IsChecked_Lambda([this, Level] { return ImportLog.IsVisible(Level) ? ECheckBoxState::Checked : ECheckBoxState::Unchecked; })
                 .OnCheckStateChanged_Lambda([this, Level](ECheckBoxState State)
                 {
@@ -126,21 +126,21 @@ namespace
                 })
                 [SNew(STextBlock).ColorAndOpacity(Color).Text_Lambda([this, Level]
                 {
-                    return FText::FromString(FString::Printf(TEXT("%s（%d）"), FPsaImportLog::Label(Level), ImportLog.Count(Level)));
+                    return FText::Format(NSLOCTEXT("UnrealPSKPSA", "LogFilterCount", "{0} ({1})"), FPsaImportLog::Label(Level), ImportLog.Count(Level));
                 })];
         }
         void RefreshFiles()
         {
             Files.Sort();
             FileList->SetText(FText::FromString(FString::Join(Files, TEXT("\n"))));
-            FileCount->SetText(FText::FromString(FString::Printf(TEXT("已选择 %d 个 PSA 文件"), Files.Num())));
+            FileCount->SetText(FText::Format(NSLOCTEXT("UnrealPSKPSA", "SelectedFiles", "{0} PSA files selected"), Files.Num()));
         }
         FReply ChooseFiles()
         {
             if (IDesktopPlatform* Desktop = FDesktopPlatformModule::Get())
             {
                 TArray<FString> Selected;
-                if (Desktop->OpenFileDialog(FSlateApplication::Get().FindBestParentWindowHandleForDialogs(AsShared()), TEXT("选择 PSA 动画"), LastDirectory, TEXT(""), TEXT("ActorX Animation (*.psa)|*.psa"), EFileDialogFlags::Multiple, Selected))
+                if (Desktop->OpenFileDialog(FSlateApplication::Get().FindBestParentWindowHandleForDialogs(AsShared()), NSLOCTEXT("UnrealPSKPSA", "ChooseFilesTitle", "Choose PSA Animations").ToString(), LastDirectory, TEXT(""), TEXT("ActorX Animation (*.psa)|*.psa"), EFileDialogFlags::Multiple, Selected))
                 {
                     for (const FString& File : Selected) Files.AddUnique(FPaths::ConvertRelativePathToFull(File));
                     if (!Selected.IsEmpty()) LastDirectory = FPaths::GetPath(Selected[0]);
@@ -154,7 +154,7 @@ namespace
             if (IDesktopPlatform* Desktop = FDesktopPlatformModule::Get())
             {
                 FString Directory;
-                if (Desktop->OpenDirectoryDialog(FSlateApplication::Get().FindBestParentWindowHandleForDialogs(AsShared()), TEXT("选择包含 PSA 的文件夹（仅当前目录）"), LastDirectory, Directory))
+                if (Desktop->OpenDirectoryDialog(FSlateApplication::Get().FindBestParentWindowHandleForDialogs(AsShared()), NSLOCTEXT("UnrealPSKPSA", "ChooseFolderTitle", "Choose a PSA Folder (Current Directory Only)").ToString(), LastDirectory, Directory))
                 {
                     LastDirectory = Directory;
                     TArray<FString> Names;
@@ -178,7 +178,7 @@ namespace
             ImportLog.Reset();
             int32 Succeeded = 0, Failed = 0;
             bool bCanceled = false;
-            FScopedSlowTask Progress(Files.Num(), FText::FromString(TEXT("正在导入 PSA 动画")));
+            FScopedSlowTask Progress(Files.Num(), NSLOCTEXT("UnrealPSKPSA", "ImportProgress", "Importing PSA animations"));
             Progress.MakeDialog(true);
             for (const FString& File : Files)
             {
@@ -197,15 +197,14 @@ namespace
                     ++Failed;
                     ImportLog.Add(EPsaImportLogLevel::Error, FPaths::GetCleanFilename(File) + TEXT("\n") + Error);
                     if (!Imported.IsEmpty())
-                        ImportLog.Add(EPsaImportLogLevel::Warning, FString::Printf(TEXT("%s：本文件未完整导入，已生成 %d 个动画，请检查导入结果及保存状态。"), *FPaths::GetCleanFilename(File), Imported.Num()));
+                        ImportLog.Add(EPsaImportLogLevel::Warning, FText::Format(NSLOCTEXT("UnrealPSKPSA", "PartialImport", "{0}: import was incomplete; {1} animations were created. Check the results and save status."), FText::FromString(FPaths::GetCleanFilename(File)), Imported.Num()).ToString());
                 }
                 for (auto* Asset : Imported) LastImported.Add(Asset);
             }
             if (bCanceled)
-                ImportLog.Add(EPsaImportLogLevel::Warning, FString::Printf(TEXT("已取消导入，剩余 %d 个文件未处理。"), Files.Num() - Succeeded - Failed));
-            const FString Heading = FString::Printf(TEXT("%s成功 %d 个文件，失败 %d 个文件，生成 %d 个动画。\n保存路径：%s"),
-                bCanceled ? TEXT("已取消剩余文件。") : TEXT("导入完成。"), Succeeded, Failed, LastImported.Num(), *Settings->Destination);
-            ResultSummary->SetText(FText::FromString(Heading));
+                ImportLog.Add(EPsaImportLogLevel::Warning, FText::Format(NSLOCTEXT("UnrealPSKPSA", "ImportCanceled", "Import canceled; {0} files were not processed."), Files.Num() - Succeeded - Failed).ToString());
+            const FText Heading = FText::Format(NSLOCTEXT("UnrealPSKPSA", "BatchSummary", "{0} {1} files succeeded, {2} failed; {3} animations created.\nDestination: {4}"), bCanceled ? NSLOCTEXT("UnrealPSKPSA", "RemainingCanceled", "Remaining files canceled.") : NSLOCTEXT("UnrealPSKPSA", "ImportComplete", "Import complete."), Succeeded, Failed, LastImported.Num(), FText::FromString(Settings->Destination));
+            ResultSummary->SetText(Heading);
             Results->SetText(FText::FromString(ImportLog.DisplayText()));
             return FReply::Handled();
         }
@@ -214,7 +213,7 @@ namespace
 
 void OpenPsaImportWindow(USkeletalMesh* TargetMesh)
 {
-    auto Window = SNew(SWindow).Title(FText::FromString(TEXT("导入 PSA 动画"))).ClientSize(FVector2D(760, 720)).SupportsMaximize(true).SupportsMinimize(false)
+    auto Window = SNew(SWindow).Title(NSLOCTEXT("UnrealPSKPSA", "PanelTitle", "Import PSA Animations")).ClientSize(FVector2D(760, 720)).SupportsMaximize(true).SupportsMinimize(false)
         [SNew(SPsaImportPanel).TargetMesh(TargetMesh)];
     ImportWindows.Add(Window);
     FSlateApplication::Get().AddWindow(Window);

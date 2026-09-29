@@ -2,6 +2,7 @@
 #include "Misc/AutomationTest.h"
 #include "PsaImporter.h"
 #include "PsaImportSettings.h"
+#include "LocalizationTestUtils.h"
 #include "PskFactory.h"
 #include "Animation/AnimSequence.h"
 #include "Animation/AnimData/IAnimationDataModel.h"
@@ -74,7 +75,7 @@ bool FPsaScaleImportTest::RunTest(const FString& Parameters)
         { AddError(Error); return static_cast<UAnimSequence*>(nullptr); }
         TestEqual(TEXT("One sequence imported"), Assets.Num(), 1);
         TestEqual(TEXT("Reference scale override is reported"), Warnings.ContainsByPredicate([](const FString& Warning)
-            { return Warning.Contains(TEXT("已使用模型参考缩放")); }), Options.bUseReferenceScale);
+            { return Warning == ActorXTestText(TEXT("UseReferenceScaleWarning")).ToString(); }), Options.bUseReferenceScale);
         return Assets.IsEmpty() ? nullptr : Assets[0];
     };
     FPsaImportOptions OriginalOptions; OriginalOptions.bReplaceExisting = true;

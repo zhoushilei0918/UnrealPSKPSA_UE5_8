@@ -1,5 +1,6 @@
 #if WITH_DEV_AUTOMATION_TESTS
 #include "Misc/AutomationTest.h"
+#include "LocalizationTestUtils.h"
 #include "PskReader.h"
 #include "PskxFactory.h"
 #include "PskFixtureUtils.h"
@@ -180,11 +181,11 @@ bool FPskxSkeletalImportTest::RunTest(const FString& Parameters)
     TestTrue(TEXT("Save static mesh"), PskxTests::Save(Static));
     for (const auto& Material : Mesh->GetMaterials()) if (Material.MaterialInterface) TestTrue(TEXT("Save material"), PskxTests::Save(Material.MaterialInterface));
     // A previous static asset must never be silently replaced through the direct API.
-    AddExpectedError(TEXT("同名资产类型"), EAutomationExpectedErrorFlags::Contains, 1);
+    AddExpectedError(FText::Format(ActorXTestText(TEXT("PskxTypeMismatch")), FText::FromString(USkeletalMesh::StaticClass()->GetName()), FText::FromString(Static->GetClass()->GetName())).ToString(), EAutomationExpectedErrorFlags::Contains, 1);
     TestNull(TEXT("Different existing asset type protected"), UPskxFactory::Import(Source, Static->GetOutermost(), Static->GetFName(), RF_Public | RF_Standalone, {}));
     const FString IncompleteFile = FixtureFolder / TEXT("MissingWeights.pskx");
     TestTrue(TEXT("Build incomplete skeleton fixture"), PskFixtureUtils::WriteWithoutChunks(Source, IncompleteFile, {TEXT("RAWWEIGHTS")}));
-    AddExpectedError(TEXT("骨骼网格必须同时包含骨骼和蒙皮权重"), EAutomationExpectedErrorFlags::Contains, 1);
+    AddExpectedError(ActorXTestText(TEXT("MissingSkinData")).ToString(), EAutomationExpectedErrorFlags::Contains, 1);
     TestNull(TEXT("Missing weights cannot silently create static mesh"), UPskxFactory::Import(IncompleteFile, CreatePackage(TEXT("/Game/PSKXSkeletalValidation/MissingWeights")), TEXT("MissingWeights"), RF_Public | RF_Standalone, {}));
     AddInfo(FString::Printf(TEXT("PSKX imported: %d bones, %d points, %d triangles, %d source skin weights."), Reader.Bones.Num(), Reader.Vertices.Num(), Reader.Faces.Num(), Reader.Influences.Num()));
     return true;

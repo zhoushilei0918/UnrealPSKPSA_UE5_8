@@ -2,6 +2,7 @@
 #include "Misc/AutomationTest.h"
 #include "PsaReader.h"
 #include "PsaImporter.h"
+#include "LocalizationTestUtils.h"
 #include "PsaImportSettings.h"
 #include "Animation/AnimSequence.h"
 #include "Animation/AnimData/IAnimationDataModel.h"
@@ -164,9 +165,11 @@ bool FPsaRepairSamplesTest::RunTest(const FString& Parameters)
         Options.bRepairInvalidKeys = true;
         const bool bImported = FPsaImporter::ImportFile(Path, Mesh, TEXT("/Game/PSARepairValidation"), Options, Assets, Summary, Error, &Warnings);
         if (!TestTrue(*(Path + TEXT(": ") + Error), bImported) || !TestEqual(TEXT("One repaired sequence"), Assets.Num(), 1)) continue;
+        TestEqual(TEXT("Repair and both bone mapping issues are warnings"), Warnings.Num(), 3);
         const FString WarningText = FString::Join(Warnings, TEXT("\n"));
-        TestTrue(TEXT("Repair and bone mapping issues are warnings"), WarningText.Contains(TEXT("已修复")) && WarningText.Contains(TEXT("忽略")) && WarningText.Contains(TEXT("参考姿态")));
-        TestTrue(TEXT("Success is separate from repair warning"), !Summary.IsEmpty() && !Summary.Contains(TEXT("已修复")) && Error.IsEmpty());
+        const FString RepairWarning = FText::Format(ActorXTestText(TEXT("RepairedKeys")), Fixed.InterpolatedKeyCount + Fixed.CopiedKeyCount, Fixed.InterpolatedKeyCount, Fixed.CopiedKeyCount).ToString();
+        TestTrue(TEXT("Repair details are disclosed"), Warnings.Contains(RepairWarning));
+        TestTrue(TEXT("Success is separate from repair warning"), !Summary.IsEmpty() && !Summary.Contains(RepairWarning) && Error.IsEmpty());
         const auto& Info = Fixed.Sequences[0];
         UAnimSequence* Sequence = Assets[0];
         TestEqual(TEXT("Repair preserves frame count"), Sequence->GetDataModel()->GetNumberOfKeys(), Info.NumRawFrames);

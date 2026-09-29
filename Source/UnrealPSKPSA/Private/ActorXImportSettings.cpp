@@ -15,13 +15,13 @@ FString FActorXOrientation::AxisName(EActorXForwardAxis Axis)
     case EActorXForwardAxis::PositiveY: return TEXT("+Y");
     case EActorXForwardAxis::NegativeX: return TEXT("-X");
     case EActorXForwardAxis::NegativeY: return TEXT("-Y");
-    default: return TEXT("未知");
+    default: return NSLOCTEXT("UnrealPSKPSA", "UnknownAxis", "Unknown").ToString();
     }
 }
 
 FString FActorXOrientation::Description() const
 {
-    return FString::Printf(TEXT("源 %s → UE %s"), *AxisName(SourceForward), *AxisName(TargetForward));
+    return FText::Format(NSLOCTEXT("UnrealPSKPSA", "OrientationDescription", "Source {0} → UE {1}"), FText::FromString(AxisName(SourceForward)), FText::FromString(AxisName(TargetForward))).ToString();
 }
 
 FActorXOrientation FActorXOrientation::Unchanged()

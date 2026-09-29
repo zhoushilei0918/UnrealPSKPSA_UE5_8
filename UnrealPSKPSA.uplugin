@@ -7,6 +7,12 @@
     "Category": "Importers",
     "EngineVersion": "5.8.0",
     "CanContainContent": false,
+    "LocalizationTargets": [
+        {
+            "Name": "UnrealPSKPSA",
+            "LoadingPolicy": "Editor"
+        }
+    ],
     "Modules": [
         {
             "Name": "UnrealPSKPSA",

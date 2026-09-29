@@ -31,7 +31,7 @@ UObject* UPskFactory::Import(const FString& Filename, UObject* Parent, const FNa
 
     if (Data.Bones.IsEmpty() || Data.Influences.IsEmpty())
     {
-        UE_LOG(LogUnrealPSKPSA, Error, TEXT("PSK/PSKX 骨骼网格必须同时包含骨骼和蒙皮权重；数据不完整，无法导入为骨骼网格。"));
+        UE_LOG(LogUnrealPSKPSA, Error, TEXT("%s"), *NSLOCTEXT("UnrealPSKPSA", "MissingSkinData", "A PSK/PSKX skeletal mesh requires both bones and skin weights. Incomplete data cannot be imported as a skeletal mesh.").ToString());
         return nullptr;
     }
 
@@ -232,7 +232,7 @@ UObject* UPskFactory::Import(const FString& Filename, UObject* Parent, const FNa
     FMeshDescription MeshDescription;
     if (!SkeletalMeshImportData.GetMeshDescription(SkeletalMesh, &BuildOptions, MeshDescription))
     {
-        UE_LOG(LogUnrealPSKPSA, Error, TEXT("Failed to create skeletal mesh description for %s"), *Filename);
+        UE_LOG(LogUnrealPSKPSA, Error, TEXT("%s"), *FText::Format(NSLOCTEXT("UnrealPSKPSA", "PskMeshDescriptionFailed", "Failed to create skeletal mesh description for {0}"), FText::FromString(Filename)).ToString());
         SkeletalMesh->MarkAsGarbage();
         Skeleton->MarkAsGarbage();
         return nullptr;

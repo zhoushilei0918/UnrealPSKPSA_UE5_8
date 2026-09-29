@@ -45,7 +45,7 @@ UObject* UPskxFactory::Import(const FString& Filename, UObject* Parent, const FN
     {
         if (!Existing->IsA(MeshClass))
         {
-            UE_LOG(LogUnrealPSKPSA, Error, TEXT("PSKX 检测为 %s，但同名资产类型为 %s。请使用新名称或目录导入。"), *MeshClass->GetName(), *Existing->GetClass()->GetName());
+            UE_LOG(LogUnrealPSKPSA, Error, TEXT("%s"), *FText::Format(NSLOCTEXT("UnrealPSKPSA", "PskxTypeMismatch", "PSKX detected as {0}, but the existing asset type is {1}. Import with a new name or folder."), FText::FromString(MeshClass->GetName()), FText::FromString(Existing->GetClass()->GetName())).ToString());
             return nullptr;
         }
     }
